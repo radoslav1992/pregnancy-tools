@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ToolCard from '@/components/ToolCard.astro';
+import { tools } from '@/data/tools';
+import { site } from '@/data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Pregnancy Tools',
+  url: `${site.url}/tools/`,
+  hasPart: tools.map((t) => ({
+    '@type': 'WebApplication',
+    name: t.title,
+    url: `${site.url}/tools/${t.slug}/`,
+    applicationCategory: 'HealthApplication',
+  })),
+};
+---
+
+<BaseLayout
+  title="Pregnancy Tools & Calculators"
+  description="Free pregnancy calculators and tools: due date, ovulation, hCG doubling, weight gain, and a contraction timer. Private and works offline."
+  path="/tools/"
+  jsonLd={jsonLd}
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">The toolkit</p>
+      <h1>Pregnancy tools &amp; calculators</h1>
+      <p class="lede">
+        A small, lovingly made set of calculators for every stage — from your first positive test to
+        timing those contractions. Free, private, and they work without a signal.
+      </p>
+      <div class="grid cols-2" style="margin-top:28px">
+        {tools.map((tool) => <ToolCard tool={tool} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

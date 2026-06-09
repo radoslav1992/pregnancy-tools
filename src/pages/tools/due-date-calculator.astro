@@ -1,0 +1,33 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import DueDateCalculator from '@/components/calculators/DueDateCalculator.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('due-date-calculator')!;
+const faqs = [
+  {
+    q: 'How is my due date calculated?',
+    a: 'The most common method is Naegele’s rule: 40 weeks (280 days) from the first day of your last menstrual period (LMP). If you know your conception or ovulation date we count 266 days forward, and for IVF we adjust for the embryo’s age at transfer.',
+  },
+  {
+    q: 'How accurate is a due date?',
+    a: 'It’s an estimate. Only about 1 in 20 babies arrive on their exact due date; most are born within two weeks either side. An early dating ultrasound is usually the most accurate, and your provider’s date takes priority.',
+  },
+  {
+    q: 'My cycle isn’t 28 days — does that matter?',
+    a: 'Yes. If your cycle is longer or shorter than 28 days, ovulation shifts, so we adjust the due date by the difference. Set your average cycle length for a better estimate.',
+  },
+  {
+    q: 'Can I calculate a due date from IVF?',
+    a: 'Absolutely. Choose the IVF tab and enter your transfer date and the embryo’s age (day-3 or day-5). Because the conception date is known precisely, IVF due dates are often very accurate.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="Estimate your due date from your last period, conception date, or IVF transfer — and see exactly where you are in the 40-week journey."
+  faqs={faqs}
+>
+  <DueDateCalculator />
+</ToolShell>

@@ -1,0 +1,12 @@
+# Cloudflare Pages project configuration.
+# Deploy the prebuilt static output with:
+#   npm run build
+#   npx wrangler pages deploy dist --project-name=pregnancy-tools
+#
+# Or connect this repo in the Cloudflare dashboard with:
+#   Build command:    npm run build
+#   Output directory: dist
+
+name = "pregnancy-tools"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-11-01"

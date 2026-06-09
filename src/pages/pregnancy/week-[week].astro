@@ -1,0 +1,261 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { weeks, getWeek, trimesterName, trimesterAccent } from '@/data/weeks';
+import { site, MEDICAL_DISCLAIMER } from '@/data/site';
+
+export function getStaticPaths() {
+  return weeks.map((w) => ({ params: { week: String(w.week) } }));
+}
+
+const { week: weekParam } = Astro.params;
+const weekNum = Number(weekParam);
+const data = getWeek(weekNum)!;
+
+const prev = getWeek(weekNum - 1);
+const next = getWeek(weekNum + 1);
+
+// Progress arc geometry (mirrors the calculator).
+const CX = 160, CY = 170, R = 140;
+const frac = Math.max(0, Math.min(1, (weekNum * 7) / 280));
+const ang = ((180 - 180 * frac) * Math.PI) / 180;
+const mx = CX + R * Math.cos(ang);
+const my = CY - R * Math.sin(ang);
+
+const accent = trimesterAccent(data.trimester);
+const weeksToGo = Math.max(0, 40 - weekNum);
+
+function lengthIn(cm: number) {
+  return (cm / 2.54).toFixed(1);
+}
+function weightOz(g: number) {
+  return (g / 28.3495).toFixed(g < 100 ? 2 : 1);
+}
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `Pregnancy Week ${weekNum}: ${data.title}`,
+    description: `What to expect at ${weekNum} weeks pregnant — your baby is about the size of ${data.fruit}.`,
+    about: 'Pregnancy',
+    isPartOf: { '@type': 'CreativeWorkSeries', name: 'Week-by-week pregnancy guide' },
+    publisher: { '@type': 'Organization', name: site.name },
+    url: `${site.url}/pregnancy/week-${weekNum}/`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Week by week', item: `${site.url}/pregnancy/` },
+      { '@type': 'ListItem', position: 3, name: `Week ${weekNum}`, item: `${site.url}/pregnancy/week-${weekNum}/` },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={`${weekNum} Weeks Pregnant: Symptoms, Baby Size & What to Expect`}
+  description={`At ${weekNum} weeks pregnant your baby is about the size of ${data.fruit}. ${data.baby.slice(0, 110)}…`}
+  path={`/pregnancy/week-${weekNum}/`}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <section class="section wk-hero" style={`--accent:${accent}`}>
+    <div class="wrap narrow">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span aria-hidden="true">/</span>
+        <a href="/pregnancy/">Week by week</a> <span aria-hidden="true">/</span>
+        <span aria-current="page">Week {weekNum}</span>
+      </nav>
+
+      <span class="pill"><span class="tri-dot" style={`background:${accent}`}></span>{trimesterName(data.trimester)} trimester</span>
+      <h1>Week {weekNum}: {data.title}</h1>
+      <p class="lede">
+        You’re {weekNum} {weekNum === 1 ? 'week' : 'weeks'} pregnant — about
+        {weeksToGo === 0 ? ' at the finish line' : ` ${weeksToGo} ${weeksToGo === 1 ? 'week' : 'weeks'} to go`}.
+        Your baby is roughly the size of <strong>{data.fruit}</strong>.
+      </p>
+
+      <div class="arcwrap">
+        <svg viewBox="0 0 320 200" role="img" aria-label={`Week ${weekNum} of 40`}>
+          <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+            stroke="var(--peach)" stroke-dasharray="32.5 100" stroke-dashoffset="0"></path>
+          <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+            stroke="var(--sage)" stroke-dasharray="35 100" stroke-dashoffset="-32.5"></path>
+          <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+            stroke="var(--mulberry)" stroke-dasharray="32.5 100" stroke-dashoffset="-67.5"></path>
+          <path class="prog" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+            stroke-dasharray={`${(frac * 100).toFixed(2)} 100`}></path>
+          <circle class="marker" cx={mx.toFixed(1)} cy={my.toFixed(1)} r="7"></circle>
+          <text class="weeknow" x="160" y="150" text-anchor="middle">{weekNum}</text>
+          <text class="weeklbl" x="160" y="172" text-anchor="middle">of 40 weeks</text>
+        </svg>
+      </div>
+
+      <div class="size-grid">
+        <div class="size">
+          <p class="k">Size of</p>
+          <p class="v">{data.fruit}</p>
+        </div>
+        <div class="size">
+          <p class="k">Length</p>
+          <p class="v">{data.lengthCm ? `${data.lengthCm} cm` : '—'}</p>
+          {data.lengthCm && <p class="sub">{lengthIn(data.lengthCm)} in · {data.lengthLabel}</p>}
+        </div>
+        <div class="size">
+          <p class="k">Weight</p>
+          <p class="v">{data.weightG ? (data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`) : '—'}</p>
+          {data.weightG && <p class="sub">{weightOz(data.weightG)} oz</p>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section content">
+    <div class="wrap narrow flow">
+      <div class="block">
+        <h2>Your baby this week</h2>
+        <p>{data.baby}</p>
+      </div>
+
+      <div class="block">
+        <h2>Your body &amp; how you might feel</h2>
+        <p>{data.mom}</p>
+      </div>
+
+      <div class="block">
+        <h2>Common symptoms at week {weekNum}</h2>
+        <ul class="symptoms">
+          {data.symptoms.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+
+      <div class="callout tip">
+        <p class="note"><b>This week’s tip:</b> {data.tip}</p>
+      </div>
+
+      <div class="callout">
+        <p class="note"><b>A gentle reminder:</b> {MEDICAL_DISCLAIMER}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- prev / next -->
+  <section class="section pager-wrap">
+    <div class="wrap narrow pager">
+      {
+        prev ? (
+          <a class="pager-link prev" href={`/pregnancy/week-${prev.week}/`}>
+            <span class="dir">← Week {prev.week}</span>
+            <span class="ttl">{prev.title}</span>
+          </a>
+        ) : (
+          <span class="pager-link disabled" />
+        )
+      }
+      {
+        next ? (
+          <a class="pager-link next" href={`/pregnancy/week-${next.week}/`}>
+            <span class="dir">Week {next.week} →</span>
+            <span class="ttl">{next.title}</span>
+          </a>
+        ) : (
+          <a class="pager-link next" href="/pregnancy/">
+            <span class="dir">All weeks →</span>
+            <span class="ttl">Back to the tracker</span>
+          </a>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- jump to any week -->
+  <section class="section alt">
+    <div class="wrap">
+      <h2>Jump to another week</h2>
+      <div class="weekjump">
+        {
+          weeks.map((w) => (
+            <a
+              href={`/pregnancy/week-${w.week}/`}
+              class:list={['chip', { current: w.week === weekNum }]}
+              style={`--c:${trimesterAccent(w.trimester)}`}
+              aria-current={w.week === weekNum ? 'page' : undefined}
+            >
+              {w.week}
+            </a>
+          ))
+        }
+      </div>
+      <p class="note" style="margin-top:18px">
+        Not sure how far along you are? <a href="/tools/due-date-calculator/">Use the due date calculator →</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .crumbs { font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .crumbs a { color: var(--ink-soft); text-decoration: none; }
+  .crumbs a:hover { color: var(--mulberry-deep); }
+
+  .wk-hero {
+    background:
+      radial-gradient(120% 80% at 50% -10%, color-mix(in srgb, var(--accent) 16%, var(--bg)), var(--bg) 60%);
+  }
+  .wk-hero .pill { background: var(--surface); }
+
+  .arcwrap { text-align: center; margin: 8px auto 0; max-width: 360px; }
+  .arcwrap svg { width: 100%; height: auto; }
+  .track { fill: none; stroke-width: 15; stroke-linecap: round; }
+  .prog { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+  .marker { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+  .weeknow { font-family: var(--serif); font-size: 2.4rem; font-weight: 500; fill: var(--ink); }
+  .weeklbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--ink-soft); }
+
+  .size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+  .size {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px; text-align: center;
+  }
+  .size .k { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 5px; }
+  .size .v { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; margin: 0; line-height: 1.2; }
+  .size .sub { font-size: 0.74rem; color: var(--ink-soft); margin: 4px 0 0; }
+  @media (max-width: 460px) { .size .v { font-size: 0.95rem; } }
+
+  .content .block { margin-bottom: 28px; }
+  .symptoms {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .symptoms li {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px; font-size: 0.9rem; font-weight: 500;
+  }
+  .tip { border-left-color: var(--accent); }
+
+  .pager-wrap { padding-block: 0; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pager-link {
+    display: flex; flex-direction: column; gap: 3px;
+    border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+    background: var(--surface); text-decoration: none; color: var(--ink);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .pager-link:hover { border-color: var(--mulberry); transform: translateY(-1px); }
+  .pager-link.next { text-align: right; }
+  .pager-link.disabled { visibility: hidden; }
+  .pager .dir { font-weight: 700; color: var(--mulberry-deep); font-size: 0.9rem; }
+  .pager .ttl { color: var(--ink-soft); font-size: 0.88rem; }
+
+  .weekjump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip {
+    width: 42px; height: 42px; display: grid; place-items: center;
+    border-radius: 11px; text-decoration: none; font-weight: 700; font-size: 0.9rem;
+    color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-bottom: 3px solid var(--c); transition: transform 0.12s;
+  }
+  .chip:hover { transform: translateY(-2px); }
+  .chip.current { background: var(--ink); color: #fff; border-color: var(--ink); }
+</style>

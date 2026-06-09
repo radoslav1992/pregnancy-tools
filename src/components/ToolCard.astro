@@ -1,0 +1,52 @@
+---
+import type { Tool } from '@/data/tools';
+interface Props { tool: Tool }
+const { tool } = Astro.props;
+---
+
+<a class:list={['tool-card', `accent-${tool.accent}`]} href={`/tools/${tool.slug}/`}>
+  <span class="ico" aria-hidden="true">{tool.icon}</span>
+  <span class="body">
+    <span class="t">{tool.title}</span>
+    <span class="s">{tool.short}</span>
+  </span>
+  <span class="arr" aria-hidden="true">→</span>
+</a>
+
+<style>
+  .tool-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: color-mix(in srgb, var(--mulberry) 40%, var(--line));
+  }
+  .ico {
+    font-size: 1.5rem;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    flex: none;
+    background: var(--surface-2);
+  }
+  .accent-peach .ico { background: color-mix(in srgb, var(--peach) 22%, #fff); }
+  .accent-sage .ico { background: color-mix(in srgb, var(--sage) 22%, #fff); }
+  .accent-mulberry .ico { background: color-mix(in srgb, var(--mulberry) 16%, #fff); }
+  .body { display: flex; flex-direction: column; gap: 2px; }
+  .t { font-weight: 700; font-size: 1rem; }
+  .s { color: var(--ink-soft); font-size: 0.88rem; }
+  .arr { margin-left: auto; color: var(--mulberry-deep); font-size: 1.1rem; }
+</style>

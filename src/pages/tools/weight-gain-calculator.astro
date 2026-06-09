@@ -1,0 +1,33 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import WeightGainCalculator from '@/components/calculators/WeightGainCalculator.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('weight-gain-calculator')!;
+const faqs = [
+  {
+    q: 'How much weight should I gain in pregnancy?',
+    a: 'It depends on your pre-pregnancy BMI. The Institute of Medicine suggests about 12.5–18 kg if you were underweight, 11.5–16 kg at a healthy weight, 7–11.5 kg if overweight, and 5–9 kg if obese — for a single baby.',
+  },
+  {
+    q: 'Where does the weight go?',
+    a: 'Only a portion is the baby (around 3–3.5 kg). The rest is the placenta, amniotic fluid, extra blood and fluid, larger breasts and uterus, and some fat stores to support breastfeeding.',
+  },
+  {
+    q: 'I’m gaining faster or slower than the range — is that ok?',
+    a: 'Gain isn’t perfectly steady, and one reading rarely matters. Patterns over time are what your provider watches. Bring any concerns to your appointments rather than worrying week to week.',
+  },
+  {
+    q: 'Does this apply to twins?',
+    a: 'No — twin and higher-order pregnancies have different, higher recommended ranges. This calculator is for a single baby. Your provider will guide you if you’re carrying multiples.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="See your recommended pregnancy weight-gain range based on your pre-pregnancy BMI and how far along you are, using Institute of Medicine guidelines."
+  faqs={faqs}
+>
+  <WeightGainCalculator />
+</ToolShell>

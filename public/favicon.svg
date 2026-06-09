@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mama Bloom">
+  <rect width="64" height="64" rx="14" fill="#fbf6f1"/>
+  <g transform="translate(32 33)">
+    <g fill="#b07089">
+      <ellipse cx="0" cy="-13" rx="6.5" ry="10"/>
+      <ellipse cx="0" cy="-13" rx="6.5" ry="10" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-13" rx="6.5" ry="10" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-13" rx="6.5" ry="10" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-13" rx="6.5" ry="10" transform="rotate(288)"/>
+    </g>
+    <circle cx="0" cy="0" r="6.5" fill="#e7b48c"/>
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+---
+import { site, footerNav } from '@/data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand-col">
+        <a class="brand" href="/">
+          <span aria-hidden="true">🌸</span> {site.name}
+        </a>
+        <p class="tagline">{site.tagline}. Free, private and installable on any device.</p>
+      </div>
+
+      {
+        footerNav.map((group) => (
+          <nav class="col" aria-label={group.heading}>
+            <h2 class="col-head">{group.heading}</h2>
+            <ul>
+              {group.items.map((item) => (
+                <li>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="bottom">
+      <p>© {year} {site.name}. Made with care for growing families.</p>
+      <p class="fine">
+        Educational content only — not a substitute for professional medical advice.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    margin-top: auto;
+    padding-block: 48px 28px;
+  }
+  .top {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 32px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .tagline { color: var(--ink-soft); font-size: 0.9rem; margin-top: 10px; max-width: 32ch; }
+  .col-head {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+  .col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .col a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  .col a:hover { color: var(--mulberry-deep); text-decoration: underline; }
+  .bottom {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+  }
+  .bottom p { margin: 0; }
+  @media (max-width: 760px) {
+    .top { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .brand-col { grid-column: 1 / -1; }
+  }
+  @media (max-width: 440px) {
+    .top { grid-template-columns: 1fr; }
+  }
+</style>

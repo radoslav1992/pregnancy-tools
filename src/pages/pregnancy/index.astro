@@ -1,0 +1,74 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import WeekCard from '@/components/WeekCard.astro';
+import { weeks } from '@/data/weeks';
+import { site } from '@/data/site';
+
+const groups = [
+  { t: 1 as const, id: 'trimester-1', name: 'First trimester', range: 'Weeks 1–13', blurb: 'From a positive test to those first scans — big changes are happening, even when you don’t look pregnant yet.' },
+  { t: 2 as const, id: 'trimester-2', name: 'Second trimester', range: 'Weeks 14–27', blurb: 'Often the most comfortable stretch: energy returns, the bump shows, and you may feel those first kicks.' },
+  { t: 3 as const, id: 'trimester-3', name: 'Third trimester', range: 'Weeks 28–40', blurb: 'The home stretch — your baby gains weight fast as you both get ready for the big day.' },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Pregnancy week-by-week guide',
+  itemListElement: weeks.map((w) => ({
+    '@type': 'ListItem',
+    position: w.week,
+    name: `Week ${w.week}: ${w.title}`,
+    url: `${site.url}/pregnancy/week-${w.week}/`,
+  })),
+};
+---
+
+<BaseLayout
+  title="Pregnancy Week by Week: Your 40-Week Guide"
+  description="A gentle, week-by-week pregnancy guide for all 40 weeks — baby size, symptoms, development and practical tips, trimester by trimester."
+  path="/pregnancy/"
+  jsonLd={jsonLd}
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">40 weeks of wonder</p>
+      <h1>Pregnancy, week by week</h1>
+      <p class="lede">
+        Follow your baby’s growth from a tiny poppy seed to a fully-grown newborn. Each week has its
+        own page with baby size, what’s developing, common symptoms and a friendly tip.
+      </p>
+      <p class="note" style="margin-top:10px">
+        Not sure where you are? <a href="/tools/due-date-calculator/">Find your week with the due date calculator →</a>
+      </p>
+    </div>
+  </section>
+
+  {
+    groups.map((g) => (
+      <section class="section trimester" id={g.id} style={`--accent:${g.t === 1 ? 'var(--peach)' : g.t === 2 ? 'var(--sage)' : 'var(--mulberry)'}`}>
+        <div class="wrap">
+          <div class="tri-head">
+            <h2>{g.name}</h2>
+            <span class="pill">{g.range}</span>
+          </div>
+          <p class="lede">{g.blurb}</p>
+          <div class="grid cols-4" style="margin-top:22px">
+            {weeks.filter((w) => w.trimester === g.t).map((w) => <WeekCard week={w} />)}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .trimester { padding-block: clamp(32px, 5vw, 52px); }
+  .trimester:nth-of-type(even) { background: var(--surface); border-block: 1px solid var(--line); }
+  .tri-head { display: flex; align-items: center; gap: 14px; }
+  .tri-head h2 { margin: 0; position: relative; padding-left: 16px; }
+  .tri-head h2::before {
+    content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+    width: 5px; border-radius: 3px; background: var(--accent);
+  }
+  .grid.cols-4 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+</style>

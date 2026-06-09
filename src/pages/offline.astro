@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="You're offline"
+  description="You appear to be offline."
+  path="/offline/"
+  noindex
+>
+  <section class="section">
+    <div class="wrap narrow center" style="text-align:center; padding-block: 6vh">
+      <p style="font-size:3rem; margin:0">🌙</p>
+      <h1>You’re offline</h1>
+      <p class="lede" style="margin-inline:auto">
+        It looks like there’s no connection right now. Pages you’ve already visited are still
+        available — and your saved due date and contraction timer work offline too.
+      </p>
+      <p style="margin-top:20px">
+        <a class="btn" href="/">Back to home</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

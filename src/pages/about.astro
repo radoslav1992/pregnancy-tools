@@ -1,0 +1,58 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+---
+
+<BaseLayout
+  title="About Mama Bloom"
+  description="Mama Bloom is a calm, private, free pregnancy companion — a due-date calculator, week-by-week tracker and a small suite of friendly tools."
+  path="/about/"
+>
+  <section class="section">
+    <div class="wrap narrow prose">
+      <p class="eyebrow">About</p>
+      <h1>A calmer way to follow your pregnancy</h1>
+      <p class="lede">
+        {site.name} is a gentle, free companion for the 40-week journey — built to be fast, private,
+        and genuinely useful on the days when everything feels overwhelming.
+      </p>
+
+      <h2>Why we made it</h2>
+      <p>
+        Pregnancy apps are often heavy, ad-cluttered, and hungry for your data. We wanted the
+        opposite: a beautiful, lightweight tool that loads instantly, works without a signal, and
+        keeps your personal dates on your own device. No account, no tracking pixels following you
+        around the web, no upsells.
+      </p>
+
+      <h2>What you’ll find here</h2>
+      <ul>
+        <li><strong>A due date calculator</strong> with three methods — last period, conception, and IVF transfer.</li>
+        <li><strong>A week-by-week tracker</strong> covering all 40 weeks, with baby size, symptoms and tips.</li>
+        <li><strong>Handy calculators</strong> for ovulation, hCG doubling, healthy weight gain, and timing contractions.</li>
+        <li><strong>An installable app</strong> — add it to your home screen and it works offline.</li>
+      </ul>
+
+      <h2>Our promise on privacy</h2>
+      <p>
+        Anything you enter — due dates, contraction times, test results — is stored only in your
+        browser, on your device. We don’t upload it, sell it, or share it. You can read more on our
+        <a href="/privacy/">privacy page</a>.
+      </p>
+
+      <h2>A word on medical advice</h2>
+      <p>
+        {site.name} is for general education and reassurance. It is <strong>not</strong> medical
+        advice and never replaces your doctor or midwife. Every pregnancy is unique — please bring
+        questions and concerns to your own healthcare provider. See our full
+        <a href="/disclaimer/">medical disclaimer</a>.
+      </p>
+
+      <hr />
+      <p class="note">
+        Have feedback or a tool you’d love to see? We’re always listening — this project grows with
+        the families who use it. 🌸
+      </p>
+    </div>
+  </section>
+</BaseLayout>

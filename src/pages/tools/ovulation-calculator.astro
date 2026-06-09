@@ -1,0 +1,33 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import OvulationCalculator from '@/components/calculators/OvulationCalculator.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('ovulation-calculator')!;
+const faqs = [
+  {
+    q: 'When am I most fertile?',
+    a: 'Your fertile window is roughly the five days before ovulation plus the day of ovulation itself, because sperm can survive up to five days and the egg lives about 24 hours. The two days before ovulation are usually the most fertile.',
+  },
+  {
+    q: 'How is ovulation estimated?',
+    a: 'The luteal phase (from ovulation to your next period) is fairly constant at about 14 days. So we estimate ovulation as your cycle length minus 14 days from the first day of your last period.',
+  },
+  {
+    q: 'How reliable is this for avoiding pregnancy?',
+    a: 'Calendar estimates are not a reliable form of contraception. Cycles vary and ovulation can shift. If you’re trying to avoid pregnancy, speak with your provider about effective methods.',
+  },
+  {
+    q: 'What can make ovulation harder to predict?',
+    a: 'Irregular cycles, stress, illness, breastfeeding, certain conditions like PCOS, and coming off hormonal birth control can all shift ovulation. Ovulation tests and tracking basal body temperature can help.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="Find your fertile window and most likely ovulation day from your cycle, so you can time things with confidence."
+  faqs={faqs}
+>
+  <OvulationCalculator />
+</ToolShell>

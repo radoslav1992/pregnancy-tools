@@ -1,0 +1,39 @@
+---
+import type { WeekData } from '@/data/weeks';
+import { trimesterAccent } from '@/data/weeks';
+interface Props { week: WeekData }
+const { week } = Astro.props;
+---
+
+<a class="week-card" href={`/pregnancy/week-${week.week}/`}>
+  <span class="dot" style={`background:${trimesterAccent(week.trimester)}`} aria-hidden="true"></span>
+  <span class="num">Week {week.week}</span>
+  <span class="fruit">{week.fruit}</span>
+  <span class="title">{week.title}</span>
+</a>
+
+<style>
+  .week-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 16px 16px 20px;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .week-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .dot {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+  }
+  .num { font-weight: 700; font-size: 0.95rem; }
+  .fruit { color: var(--mulberry-deep); font-size: 0.82rem; font-weight: 600; }
+  .title { color: var(--ink-soft); font-size: 0.84rem; }
+</style>

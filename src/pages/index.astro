@@ -1,0 +1,155 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DueDateCalculator from '@/components/calculators/DueDateCalculator.astro';
+import ToolCard from '@/components/ToolCard.astro';
+import WeekCard from '@/components/WeekCard.astro';
+import { tools } from '@/data/tools';
+import { weeks } from '@/data/weeks';
+import { site, MEDICAL_DISCLAIMER } from '@/data/site';
+
+const featuredWeeks = [8, 12, 20, 28, 36, 40].map(
+  (n) => weeks.find((w) => w.week === n)!
+);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${site.url}/pregnancy/?week={week}`,
+      'query-input': 'required name=week',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: `${site.name} — Pregnancy Tools`,
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: site.description,
+  },
+];
+---
+
+<BaseLayout
+  title="Pregnancy Due Date Calculator & Week-by-Week Tracker"
+  description="Free pregnancy due-date calculator plus a week-by-week tracker and friendly tools. Calm, private, fast — and installable on your phone. Not medical advice."
+  path="/"
+  jsonLd={jsonLd}
+>
+  <!-- Hero + calculator -->
+  <section class="hero section">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Your pregnancy, week by week</p>
+        <h1>When will you meet your baby?</h1>
+        <p class="lede">
+          Estimate your due date and see exactly where you are in the 40-week journey — then follow
+          along with a gentle, science-grounded week-by-week guide.
+        </p>
+        <ul class="trust">
+          <li>✦ Free &amp; private — your dates stay on your device</li>
+          <li>✦ Works offline, installs like an app</li>
+          <li>✦ Three dating methods: period, conception, IVF</li>
+        </ul>
+      </div>
+      <div class="hero-calc">
+        <DueDateCalculator />
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools -->
+  <section class="section alt">
+    <div class="wrap">
+      <p class="eyebrow">The toolkit</p>
+      <h2>Everything you need, in one calm place</h2>
+      <p class="lede">From trying-to-conceive to those first contractions — simple tools that respect your time and your privacy.</p>
+      <div class="grid cols-2" style="margin-top:24px">
+        {tools.map((tool) => <ToolCard tool={tool} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Week by week -->
+  <section class="section">
+    <div class="wrap">
+      <div class="row-head">
+        <div>
+          <p class="eyebrow">40 weeks of wonder</p>
+          <h2>Follow your baby’s growth</h2>
+          <p class="lede">Each week brings new developments. Peek ahead, or jump to where you are today.</p>
+        </div>
+        <a class="btn ghost" href="/pregnancy/">All 40 weeks</a>
+      </div>
+      <div class="grid cols-3" style="margin-top:24px">
+        {featuredWeeks.map((w) => <WeekCard week={w} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Install / PWA nudge -->
+  <section class="section alt">
+    <div class="wrap narrow center">
+      <div class="install card">
+        <span class="emoji" aria-hidden="true">📲</span>
+        <h2>Keep it in your pocket</h2>
+        <p class="lede center">
+          Add {site.name} to your home screen for instant, offline access to your due date,
+          your week, and the contraction timer — no app store, no account.
+        </p>
+        <p class="note">In your browser menu, tap <b>Add to Home Screen</b> or <b>Install</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Disclaimer -->
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="callout">
+        <p class="note"><b>This is an estimate, not medical advice.</b> {MEDICAL_DISCLAIMER}</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding-top: clamp(28px, 5vw, 56px); }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(28px, 5vw, 56px);
+    align-items: center;
+  }
+  .trust {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: grid;
+    gap: 8px;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+  .trust li::marker { content: ''; }
+
+  .section.alt { background: var(--surface); border-block: 1px solid var(--line); }
+  .center { text-align: center; }
+  .center .lede { margin-inline: auto; }
+
+  .row-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+  .install { text-align: center; padding: clamp(28px, 6vw, 44px); }
+  .install .emoji { font-size: 2.4rem; }
+  .install h2 { margin-top: 10px; }
+
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-copy { order: 1; }
+    .hero-calc { order: 2; }
+  }
+</style>
