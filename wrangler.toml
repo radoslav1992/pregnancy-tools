@@ -1,12 +1,27 @@
-# Cloudflare Pages project configuration.
-# Deploy the prebuilt static output with:
-#   npm run build
-#   npx wrangler pages deploy dist --project-name=pregnancy-tools
+# Cloudflare configuration.
 #
-# Or connect this repo in the Cloudflare dashboard with:
-#   Build command:    npm run build
-#   Output directory: dist
+# This project is a STATIC Astro site. The recommended setup is an
+# assets-only Cloudflare Worker (Workers Static Assets): Cloudflare runs the
+# build, then serves the generated ./dist folder directly — no Worker script.
+#
+# ── Cloudflare dashboard (Workers · "Import a repository") ──
+#   Build command:   npm run build
+#   Deploy command:  npx wrangler deploy   (default)
+#   Production branch: main
+# The [assets] block below tells Cloudflare what to serve.
+#
+# ── Or from the CLI ──
+#   npm run build && npx wrangler deploy
+#
+# (Prefer Cloudflare Pages instead? Use `npx wrangler pages deploy dist`, or in
+#  the dashboard set Output directory = dist. Pages ignores the [assets] block.)
 
 name = "pregnancy-tools"
-pages_build_output_dir = "dist"
 compatibility_date = "2024-11-01"
+
+[assets]
+directory = "./dist"
+# Maps "/tools/" → "/tools/index.html" to match Astro's directory output.
+html_handling = "auto-trailing-slash"
+# Serve our custom 404 page (with a 404 status) for unknown routes.
+not_found_handling = "404-page"
