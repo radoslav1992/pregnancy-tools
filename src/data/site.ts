@@ -5,12 +5,66 @@ export const site = {
   tagline: 'Your calm pregnancy companion',
   description:
     'Free pregnancy due-date calculator, week-by-week tracker, and a suite of friendly tools — calm, fast, private, and works offline.',
-  /** Canonical production origin. Override with SITE_URL env at build time. */
-  url: 'https://pregnancyandbaby.tools',
+  /** Canonical production origin. Override with SITE_URL env at build time
+   *  (matches astro.config.mjs so canonical URLs, JSON-LD and the sitemap agree). */
+  url: (process.env.SITE_URL || 'https://pregnancyandbaby.tools').replace(/\/$/, ''),
   locale: 'en',
+  /** BCP-47 language tag used for og:locale and JSON-LD `inLanguage`. */
+  lang: 'en-US',
+  ogLocale: 'en_US',
   themeColor: '#b07089',
   twitter: '@mamabloom',
   author: 'Mama Bloom',
+  /** Brand logo used in Organization structured data (square, on-brand). */
+  logo: '/icons/icon-512.png',
+  /** Default social-share card (1200×630). */
+  ogImage: '/icons/og-default.png',
+  ogImageAlt: 'Mama Bloom — a calm, free pregnancy companion with a due-date calculator and week-by-week tracker.',
+  /** Profiles/links that reinforce the brand entity for search & AI engines. */
+  sameAs: ['https://twitter.com/mamabloom'],
+  /** Publication / last-review dates for evergreen editorial content (ISO). */
+  contentPublished: '2025-03-01',
+  contentReviewed: '2025-06-01',
+} as const;
+
+/**
+ * Sitewide Organization node. Emitted (once) on every page with a stable
+ * `@id` so search engines and AI answer engines can resolve the brand entity
+ * and so per-page `publisher` references stay light. Strengthens E-E-A-T and
+ * Generative Engine Optimization (GEO).
+ */
+export const organizationSchema = {
+  '@type': 'Organization',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  url: `${site.url}/`,
+  logo: {
+    '@type': 'ImageObject',
+    url: new URL(site.logo, site.url).href,
+    width: 512,
+    height: 512,
+  },
+  description: site.description,
+  sameAs: site.sameAs,
+} as const;
+
+/** Sitewide WebSite node with a search action and language. */
+export const webSiteSchema = {
+  '@type': 'WebSite',
+  '@id': `${site.url}/#website`,
+  name: site.name,
+  url: `${site.url}/`,
+  description: site.description,
+  inLanguage: site.lang,
+  publisher: { '@id': `${site.url}/#organization` },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${site.url}/pregnancy/?week={week}`,
+    },
+    'query-input': 'required name=week',
+  },
 } as const;
 
 export interface NavItem {

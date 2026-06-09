@@ -24,8 +24,13 @@ const jsonLd: Record<string, unknown>[] = [
     url: `${site.url}/tools/${tool.slug}/`,
     applicationCategory: 'HealthApplication',
     operatingSystem: 'Any',
+    browserRequirements: 'Requires a modern web browser with JavaScript.',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     description: tool.description,
+    inLanguage: site.lang,
+    isAccessibleForFree: true,
+    keywords: tool.keywords.join(', '),
+    publisher: { '@id': `${site.url}/#organization` },
   },
   {
     '@context': 'https://schema.org',
@@ -118,24 +123,4 @@ if (faqs.length) {
   .section.alt { background: var(--surface); border-top: 1px solid var(--line); }
 
   .faq { margin-top: 40px; }
-  .faq h2 { margin-bottom: 14px; }
-  .faq details {
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    background: var(--surface);
-    padding: 4px 16px;
-    margin-bottom: 10px;
-  }
-  .faq summary {
-    cursor: pointer;
-    font-weight: 600;
-    padding: 12px 0;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .faq summary::after { content: '+'; color: var(--mulberry-deep); font-size: 1.3rem; }
-  .faq details[open] summary::after { content: '–'; }
-  .faq details p { margin: 0 0 14px; color: var(--ink-soft); font-size: 0.95rem; }
 </style>

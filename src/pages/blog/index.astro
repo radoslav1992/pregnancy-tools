@@ -9,18 +9,32 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Blog',
-  name: `${site.name} Guides`,
-  url: `${site.url}/blog/`,
-  blogPost: posts.map((p) => ({
-    '@type': 'BlogPosting',
-    headline: p.data.title,
-    datePublished: p.data.pubDate.toISOString(),
-    url: `${site.url}/blog/${p.id}/`,
-  })),
-};
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: `${site.name} Guides`,
+    url: `${site.url}/blog/`,
+    inLanguage: site.lang,
+    publisher: { '@id': `${site.url}/#organization` },
+    blogPost: posts.map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.data.title,
+      description: p.data.description,
+      datePublished: p.data.pubDate.toISOString(),
+      dateModified: (p.data.updatedDate ?? p.data.pubDate).toISOString(),
+      url: `${site.url}/blog/${p.id}/`,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: `${site.url}/blog/` },
+    ],
+  },
+];
 ---
 
 <BaseLayout

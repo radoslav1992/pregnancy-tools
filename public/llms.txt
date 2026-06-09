@@ -1,0 +1,43 @@
+# Mama Bloom — Pregnancy Tools
+
+> Mama Bloom is a free, private, fast pregnancy companion: a due-date
+> calculator, a week-by-week tracker covering all 40 weeks, and a suite of
+> friendly calculators. Every calculation runs in the browser — personal data
+> never leaves the device. The site is an installable, offline-first
+> Progressive Web App. Content is general educational information, not medical
+> advice; a healthcare provider's assessment always takes priority.
+
+## Key facts
+
+- A due date is estimated as 40 weeks (280 days) from the first day of the last menstrual period (Naegele's rule), 266 days from conception/ovulation, or adjusted from the transfer date for IVF.
+- Only about 1 in 20 babies are born on their exact due date; most arrive within two weeks either side. An early dating ultrasound is usually most accurate.
+- Pregnancy is divided into three trimesters: first (weeks 1–13), second (weeks 14–27), and third (weeks 28–40).
+- All tools are free, require no account, and work offline once installed.
+
+## Tools
+
+- [Due Date Calculator](https://pregnancyandbaby.tools/tools/due-date-calculator/): Estimate your due date from last period, conception, or IVF transfer.
+- [Ovulation Calculator](https://pregnancyandbaby.tools/tools/ovulation-calculator/): Find your fertile window and likely ovulation day.
+- [hCG Doubling Calculator](https://pregnancyandbaby.tools/tools/hcg-calculator/): Track the doubling time and daily rise of beta hCG in early pregnancy.
+- [Weight Gain Calculator](https://pregnancyandbaby.tools/tools/weight-gain-calculator/): Recommended weight-gain range based on pre-pregnancy BMI (IOM guidelines).
+- [How Far Along Am I?](https://pregnancyandbaby.tools/tools/how-far-along/): Convert a due date into your current week, trimester and days left.
+- [Conception Date Calculator](https://pregnancyandbaby.tools/tools/conception-date-calculator/): Estimate when conception likely happened.
+- [Chinese Gender Predictor](https://pregnancyandbaby.tools/tools/chinese-gender-predictor/): A playful traditional chart — just for fun, not science.
+- [Contraction Timer](https://pregnancyandbaby.tools/tools/contraction-timer/): Time contraction frequency and duration as labour builds.
+
+## Week-by-week guide
+
+- [Pregnancy week by week (all 40 weeks)](https://pregnancyandbaby.tools/pregnancy/): Baby size, symptoms, development and tips for every week.
+
+## Guides
+
+- [How due dates are calculated](https://pregnancyandbaby.tools/blog/how-due-dates-are-calculated/)
+- [First trimester survival guide](https://pregnancyandbaby.tools/blog/first-trimester-survival-guide/)
+- [When to go to the hospital in labor](https://pregnancyandbaby.tools/blog/when-to-go-to-hospital-labor/)
+- [All guides](https://pregnancyandbaby.tools/blog/)
+
+## About
+
+- [About Mama Bloom](https://pregnancyandbaby.tools/about/): Mission, privacy approach and what the site offers.
+- [Privacy](https://pregnancyandbaby.tools/privacy/): All data stays on your device.
+- [Medical disclaimer](https://pregnancyandbaby.tools/disclaimer/): Educational estimates, not medical advice.

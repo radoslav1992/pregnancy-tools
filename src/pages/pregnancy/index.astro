@@ -10,17 +10,29 @@ const groups = [
   { t: 3 as const, id: 'trimester-3', name: 'Third trimester', range: 'Weeks 28–40', blurb: 'The home stretch — your baby gains weight fast as you both get ready for the big day.' },
 ];
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: 'Pregnancy week-by-week guide',
-  itemListElement: weeks.map((w) => ({
-    '@type': 'ListItem',
-    position: w.week,
-    name: `Week ${w.week}: ${w.title}`,
-    url: `${site.url}/pregnancy/week-${w.week}/`,
-  })),
-};
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Pregnancy week-by-week guide',
+    description: 'All 40 weeks of pregnancy with baby size, symptoms, development and tips.',
+    numberOfItems: weeks.length,
+    itemListElement: weeks.map((w) => ({
+      '@type': 'ListItem',
+      position: w.week,
+      name: `Week ${w.week}: ${w.title}`,
+      url: `${site.url}/pregnancy/week-${w.week}/`,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Week by week', item: `${site.url}/pregnancy/` },
+    ],
+  },
+];
 ---
 
 <BaseLayout

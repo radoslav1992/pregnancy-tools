@@ -20,7 +20,28 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/offline'),
+      filter: (page) => !page.includes('/offline') && !page.includes('/404'),
+      changefreq: 'weekly',
+      lastmod: new Date(),
+      /** @param {any} item */
+      serialize(item) {
+        // Tune priority/freshness by section so crawlers spend budget well.
+        const url = item.url;
+        if (url === `${SITE}/` || url === SITE) {
+          item.priority = 1.0;
+          item.changefreq = 'weekly';
+        } else if (url.includes('/tools/') || url.includes('/pregnancy/')) {
+          item.priority = 0.8;
+          item.changefreq = 'monthly';
+        } else if (url.includes('/blog/')) {
+          item.priority = 0.7;
+          item.changefreq = 'monthly';
+        } else {
+          item.priority = 0.5;
+          item.changefreq = 'yearly';
+        }
+        return item;
+      },
     }),
     AstroPWA({
       registerType: 'autoUpdate',
