@@ -1,0 +1,128 @@
+---
+// Pregnancy weight-gain ranges based on pre-pregnancy BMI (IOM/NAM guidelines).
+---
+
+<div class="wgc card">
+  <div class="units" role="tablist" aria-label="Units">
+    <button class="unit" data-unit="metric" aria-selected="true">Metric (kg / cm)</button>
+    <button class="unit" data-unit="imperial" aria-selected="false">Imperial (lb / in)</button>
+  </div>
+
+  <div class="fld-row">
+    <div class="fld">
+      <label for="wgc-height">Height <span class="hint" data-u-height>(cm)</span></label>
+      <input type="number" id="wgc-height" min="0" step="0.1" inputmode="decimal" placeholder="165" />
+    </div>
+    <div class="fld">
+      <label for="wgc-weight">Pre-pregnancy weight <span class="hint" data-u-weight>(kg)</span></label>
+      <input type="number" id="wgc-weight" min="0" step="0.1" inputmode="decimal" placeholder="62" />
+    </div>
+  </div>
+  <div class="fld">
+    <label for="wgc-week">How many weeks along? <span class="hint">(1–40)</span></label>
+    <input type="number" id="wgc-week" min="1" max="40" step="1" inputmode="numeric" placeholder="20" />
+  </div>
+
+  <button class="btn block" id="wgc-calc" style="margin-top:6px">Show my healthy range</button>
+  <p class="calc-err" id="wgc-err" role="alert"></p>
+
+  <div class="calc-result" id="wgc-result" hidden>
+    <div class="big-stat">
+      <p class="k">Recommended gain by week <span id="wgc-wlabel">—</span></p>
+      <p class="v" id="wgc-now">—</p>
+      <p class="sub" id="wgc-cat">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Your pre-pregnancy BMI</p><p class="v" id="wgc-bmi">—</p></div>
+      <div class="cell"><p class="k">BMI category</p><p class="v" id="wgc-catshort">—</p></div>
+      <div class="cell"><p class="k">Total recommended gain</p><p class="v" id="wgc-total">—</p></div>
+      <div class="cell"><p class="k">Typical weekly gain now</p><p class="v" id="wgc-weekly">—</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">
+      Based on Institute of Medicine ranges. Singleton pregnancy. Carrying twins, or specific health
+      conditions, change these numbers — always follow your provider’s personal guidance.
+    </p>
+  </div>
+</div>
+
+<style>
+  .wgc { padding: clamp(18px, 4vw, 24px); }
+  .units { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+  .unit {
+    flex: 1; border: 0; background: transparent; cursor: pointer; border-radius: 9px;
+    padding: 9px 6px; font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--ink-soft);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  }
+  .unit[aria-selected='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(58, 46, 63, 0.12); }
+</style>
+
+<script>
+  const $ = (id: string) => document.getElementById(id);
+  let unit: 'metric' | 'imperial' = 'metric';
+
+  const unitBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.wgc .unit'));
+  unitBtns.forEach((b) => {
+    b.addEventListener('click', () => {
+      unit = (b.dataset.unit as 'metric' | 'imperial') || 'metric';
+      unitBtns.forEach((x) => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+      document.querySelectorAll<HTMLElement>('.wgc [data-u-height]').forEach((e) => (e.textContent = unit === 'metric' ? '(cm)' : '(in)'));
+      document.querySelectorAll<HTMLElement>('.wgc [data-u-weight]').forEach((e) => (e.textContent = unit === 'metric' ? '(kg)' : '(lb)'));
+    });
+  });
+
+  // IOM categories: [min kg total, max kg total, min kg/week 2nd-3rd tri, max kg/week]
+  type Cat = { name: string; tMin: number; tMax: number; wMin: number; wMax: number };
+  function category(bmi: number): Cat {
+    if (bmi < 18.5) return { name: 'Underweight', tMin: 12.5, tMax: 18, wMin: 0.44, wMax: 0.58 };
+    if (bmi < 25) return { name: 'Healthy weight', tMin: 11.5, tMax: 16, wMin: 0.35, wMax: 0.5 };
+    if (bmi < 30) return { name: 'Overweight', tMin: 7, tMax: 11.5, wMin: 0.23, wMax: 0.33 };
+    return { name: 'Obese', tMin: 5, tMax: 9, wMin: 0.17, wMax: 0.27 };
+  }
+
+  const err = $('wgc-err');
+  function fail(msg: string) { if (err) { err.textContent = msg; err.classList.add('show'); } }
+
+  $('wgc-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    let h = parseFloat(($('wgc-height') as HTMLInputElement).value);
+    let w = parseFloat(($('wgc-weight') as HTMLInputElement).value);
+    const week = parseInt(($('wgc-week') as HTMLInputElement).value, 10);
+
+    if (!(h > 0) || !(w > 0)) return fail('Please enter your height and pre-pregnancy weight.');
+    if (!(week >= 1 && week <= 40)) return fail('Please enter how many weeks along you are (1–40).');
+
+    // Normalise to metric.
+    if (unit === 'imperial') { h = h * 2.54; w = w * 0.453592; }
+    const hM = h / 100;
+    const bmi = w / (hM * hM);
+    const cat = category(bmi);
+
+    // First-trimester gain ~0.5–2 kg, then weekly range applies from week 13.
+    const wkAfter = Math.max(0, week - 13);
+    const ft = { lo: 0.5, hi: 2 };
+    let lo = (week <= 13 ? (ft.lo * week) / 13 : ft.lo + cat.wMin * wkAfter);
+    let hi = (week <= 13 ? (ft.hi * week) / 13 : ft.hi + cat.wMax * wkAfter);
+    lo = Math.min(lo, cat.tMin);
+    hi = Math.min(hi, cat.tMax);
+
+    const u = unit === 'metric' ? 'kg' : 'lb';
+    const conv = (kg: number) => (unit === 'metric' ? kg : kg / 0.453592);
+    const r1 = (n: number) => conv(n).toFixed(1);
+
+    const setText = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+    setText('wgc-wlabel', String(week));
+    setText('wgc-now', `${r1(lo)}–${r1(hi)} ${u}`);
+    setText('wgc-cat', `For a ${cat.name.toLowerCase()} pre-pregnancy BMI`);
+    setText('wgc-bmi', bmi.toFixed(1));
+    setText('wgc-catshort', cat.name);
+    setText('wgc-total', `${r1(cat.tMin)}–${r1(cat.tMax)} ${u}`);
+    setText(
+      'wgc-weekly',
+      week <= 13 ? 'Minimal (1st tri)' : `${r1(cat.wMin)}–${r1(cat.wMax)} ${u}/wk`
+    );
+
+    const r = $('wgc-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

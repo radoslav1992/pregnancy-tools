@@ -1,0 +1,33 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import HcgCalculator from '@/components/calculators/HcgCalculator.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('hcg-calculator')!;
+const faqs = [
+  {
+    q: 'What is hCG and why does it matter?',
+    a: 'Human chorionic gonadotropin (hCG) is the hormone produced in pregnancy and detected by pregnancy tests. In early pregnancy, the rate at which it rises can be a reassuring sign of progression.',
+  },
+  {
+    q: 'How fast should hCG rise?',
+    a: 'In early pregnancy hCG typically doubles every 48 to 72 hours. As levels get higher (above ~6,000 mIU/mL) the rise naturally slows. A single value tells you little — the trend over time is what matters.',
+  },
+  {
+    q: 'My hCG isn’t doubling — should I worry?',
+    a: 'Not necessarily on its own, but slower-than-expected or falling levels are worth discussing with your provider promptly, as they can sometimes indicate an early loss or ectopic pregnancy. Always interpret results with your care team.',
+  },
+  {
+    q: 'What are normal hCG levels?',
+    a: 'Ranges are very wide and vary by lab and by how far along you are, so there’s no single “normal” number. That’s why this tool focuses on the rate of change between two of your own results rather than absolute values.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="Enter two beta hCG results to see the doubling time and daily rise in early pregnancy. Trends matter far more than any single number."
+  faqs={faqs}
+>
+  <HcgCalculator />
+</ToolShell>

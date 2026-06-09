@@ -1,0 +1,108 @@
+---
+// Calculates hCG doubling time and daily rise between two beta results.
+---
+
+<div class="hcg card">
+  <div class="fld-row">
+    <div class="fld">
+      <label for="hcg-d1">First test date</label>
+      <input type="date" id="hcg-d1" />
+    </div>
+    <div class="fld">
+      <label for="hcg-v1">First hCG <span class="hint">(mIU/mL)</span></label>
+      <input type="number" id="hcg-v1" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 120" />
+    </div>
+  </div>
+  <div class="fld-row">
+    <div class="fld">
+      <label for="hcg-d2">Second test date</label>
+      <input type="date" id="hcg-d2" />
+    </div>
+    <div class="fld">
+      <label for="hcg-v2">Second hCG <span class="hint">(mIU/mL)</span></label>
+      <input type="number" id="hcg-v2" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 290" />
+    </div>
+  </div>
+
+  <button class="btn block" id="hcg-calc" style="margin-top:6px">Calculate doubling time</button>
+  <p class="calc-err" id="hcg-err" role="alert"></p>
+
+  <div class="calc-result" id="hcg-result" hidden>
+    <div class="big-stat">
+      <p class="k">Doubling time</p>
+      <p class="v" id="hcg-double">—</p>
+      <p class="sub" id="hcg-verdict">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Daily increase</p><p class="v" id="hcg-daily">—</p></div>
+      <div class="cell"><p class="k">Total rise</p><p class="v" id="hcg-total">—</p></div>
+      <div class="cell"><p class="k">Hours between tests</p><p class="v" id="hcg-hours">—</p></div>
+      <div class="cell"><p class="k">Fold change</p><p class="v" id="hcg-fold">—</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">
+      In early pregnancy hCG typically doubles every <b>48–72 hours</b>. A single value means little on
+      its own — trends and your provider’s interpretation matter most.
+    </p>
+  </div>
+</div>
+
+<style>
+  .hcg { padding: clamp(18px, 4vw, 24px); }
+</style>
+
+<script>
+  const $ = (id: string) => document.getElementById(id);
+  const DAY = 86400000;
+
+  const err = $('hcg-err');
+  function fail(msg: string) { if (err) { err.textContent = msg; err.classList.add('show'); } }
+
+  $('hcg-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    const d1v = ($('hcg-d1') as HTMLInputElement).value;
+    const d2v = ($('hcg-d2') as HTMLInputElement).value;
+    const v1 = parseFloat(($('hcg-v1') as HTMLInputElement).value);
+    const v2 = parseFloat(($('hcg-v2') as HTMLInputElement).value);
+
+    if (!d1v || !d2v) return fail('Please enter both test dates.');
+    if (!(v1 > 0) || !(v2 > 0)) return fail('Please enter both hCG values (greater than zero).');
+
+    const t1 = new Date(d1v + 'T00:00:00').getTime();
+    const t2 = new Date(d2v + 'T00:00:00').getTime();
+    const hours = (t2 - t1) / (DAY / 24);
+
+    if (hours <= 0) return fail('The second test must be after the first.');
+    if (v2 === v1) return fail('The two values are identical — no change to measure.');
+
+    const ratio = v2 / v1;
+    // Doubling time formula: t * ln(2) / ln(v2/v1)
+    const doublingHours = (hours * Math.log(2)) / Math.log(ratio);
+    const dailyRate = (Math.pow(ratio, 24 / hours) - 1) * 100;
+    const totalRise = (ratio - 1) * 100;
+
+    const setText = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+
+    if (ratio < 1) {
+      setText('hcg-double', 'Falling');
+      ($('hcg-verdict') as HTMLElement).textContent =
+        'These levels are dropping — please discuss this with your provider promptly.';
+    } else {
+      const days = Math.floor(doublingHours / 24);
+      const hrs = Math.round(doublingHours % 24);
+      setText('hcg-double', days >= 1 ? `${days}d ${hrs}h` : `${Math.round(doublingHours)} hours`);
+      ($('hcg-verdict') as HTMLElement).textContent =
+        doublingHours <= 72
+          ? 'Within the typical 48–72 hour range. 💛'
+          : 'Slower than the typical 48–72 hours — worth reviewing with your provider.';
+    }
+
+    setText('hcg-daily', (dailyRate >= 0 ? '+' : '') + dailyRate.toFixed(0) + '%');
+    setText('hcg-total', (totalRise >= 0 ? '+' : '') + totalRise.toFixed(0) + '%');
+    setText('hcg-hours', Math.round(hours) + ' h');
+    setText('hcg-fold', ratio.toFixed(2) + '×');
+
+    const r = $('hcg-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

@@ -1,0 +1,80 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { site } from '@/data/site';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: `${site.name} Guides`,
+  url: `${site.url}/blog/`,
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.title,
+    datePublished: p.data.pubDate.toISOString(),
+    url: `${site.url}/blog/${p.id}/`,
+  })),
+};
+---
+
+<BaseLayout
+  title="Pregnancy Guides & Articles"
+  description="Friendly, practical pregnancy guides — from surviving the first trimester to knowing when to head to the hospital."
+  path="/blog/"
+  jsonLd={jsonLd}
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Guides</p>
+      <h1>Pregnancy guides &amp; articles</h1>
+      <p class="lede">
+        Clear, warm, practical reading for every stage — written to reassure, not overwhelm.
+      </p>
+
+      <div class="grid cols-2" style="margin-top:28px">
+        {
+          posts.map((p) => (
+            <a class="post-card" href={`/blog/${p.id}/`}>
+              <span class="emoji" aria-hidden="true">{p.data.emoji}</span>
+              <span class="cat">{p.data.category}</span>
+              <h2>{p.data.title}</h2>
+              <p class="desc">{p.data.description}</p>
+              <span class="date">{fmt(p.data.pubDate)}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .post-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .post-card .emoji { font-size: 1.8rem; }
+  .post-card .cat {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--mulberry-deep);
+  }
+  .post-card h2 { margin: 2px 0; font-size: 1.25rem; }
+  .post-card .desc { color: var(--ink-soft); font-size: 0.92rem; margin: 0; }
+  .post-card .date { color: var(--ink-soft); font-size: 0.8rem; margin-top: 6px; }
+</style>

@@ -1,0 +1,54 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+---
+
+<BaseLayout
+  title="Medical Disclaimer"
+  description="Mama Bloom provides general educational information and estimates, not medical advice. Always consult your healthcare provider."
+  path="/disclaimer/"
+>
+  <section class="section">
+    <div class="wrap narrow prose">
+      <p class="eyebrow">Important</p>
+      <h1>Medical disclaimer</h1>
+
+      <p>
+        The information and tools on {site.name} are provided for general educational and
+        informational purposes only. They are <strong>not</strong> medical advice and are not a
+        substitute for professional diagnosis, treatment, or the guidance of a qualified healthcare
+        provider.
+      </p>
+
+      <h2>Estimates, not certainties</h2>
+      <p>
+        Due dates, fertile windows, baby sizes, hormone trends and weight-gain ranges are population
+        averages and estimates. Every pregnancy is different. Only about 1 in 20 babies arrive on
+        their exact due date, and individual results vary widely. Your provider’s assessment —
+        especially dating from an early ultrasound — always takes priority.
+      </p>
+
+      <h2>Always consult your provider</h2>
+      <p>
+        Never disregard or delay seeking professional medical advice because of something you read
+        here. If you think you may have a medical emergency, contact your doctor, midwife, or local
+        emergency services immediately.
+      </p>
+
+      <h2>When to seek urgent care</h2>
+      <p>
+        Contact your provider promptly if you experience heavy bleeding, severe pain, a reduction in
+        your baby’s movements, your waters breaking, signs of pre-eclampsia (such as severe
+        headache, vision changes or sudden swelling), or simply feel that something is wrong — no
+        tool can replace your instincts and your care team.
+      </p>
+
+      <h2>No liability</h2>
+      <p>
+        {site.name} and its creators accept no responsibility or liability for any decisions made or
+        actions taken in reliance on the information or tools provided. Use of this site is at your
+        own discretion and risk.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

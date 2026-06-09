@@ -1,0 +1,141 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ToolCard from '@/components/ToolCard.astro';
+import type { Tool } from '@/data/tools';
+import { tools } from '@/data/tools';
+import { site, MEDICAL_DISCLAIMER } from '@/data/site';
+
+interface FAQ { q: string; a: string }
+
+interface Props {
+  tool: Tool;
+  intro?: string;
+  faqs?: FAQ[];
+}
+
+const { tool, intro, faqs = [] } = Astro.props;
+const others = tools.filter((t) => t.slug !== tool.slug).slice(0, 4);
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: tool.title,
+    url: `${site.url}/tools/${tool.slug}/`,
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: tool.description,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: `${site.url}/tools/` },
+      { '@type': 'ListItem', position: 3, name: tool.title, item: `${site.url}/tools/${tool.slug}/` },
+    ],
+  },
+];
+
+if (faqs.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
+}
+---
+
+<BaseLayout
+  title={`${tool.title} — ${tool.short}`}
+  description={tool.description}
+  path={`/tools/${tool.slug}/`}
+  jsonLd={jsonLd}
+>
+  <section class="section">
+    <div class="wrap narrow">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a> <span aria-hidden="true">/</span>
+        <span aria-current="page">{tool.title}</span>
+      </nav>
+
+      <p class="eyebrow">{tool.icon} Pregnancy tool</p>
+      <h1>{tool.title}</h1>
+      <p class="lede">{intro ?? tool.description}</p>
+
+      <div style="margin-top:24px">
+        <slot />
+      </div>
+
+      <div class="callout" style="margin-top:24px">
+        <p class="note"><b>Remember:</b> {MEDICAL_DISCLAIMER}</p>
+      </div>
+
+      {
+        faqs.length > 0 && (
+          <div class="faq">
+            <h2>Common questions</h2>
+            {faqs.map((f) => (
+              <details>
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <p class="eyebrow">Keep exploring</p>
+      <h2>More tools</h2>
+      <div class="grid cols-2" style="margin-top:20px">
+        {others.map((t) => <ToolCard tool={t} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .crumbs a { color: var(--ink-soft); text-decoration: none; }
+  .crumbs a:hover { color: var(--mulberry-deep); }
+  .section.alt { background: var(--surface); border-top: 1px solid var(--line); }
+
+  .faq { margin-top: 40px; }
+  .faq h2 { margin-bottom: 14px; }
+  .faq details {
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    padding: 4px 16px;
+    margin-bottom: 10px;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 12px 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq summary::after { content: '+'; color: var(--mulberry-deep); font-size: 1.3rem; }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { margin: 0 0 14px; color: var(--ink-soft); font-size: 0.95rem; }
+</style>

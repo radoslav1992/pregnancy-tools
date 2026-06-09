@@ -1,0 +1,33 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import ContractionTimer from '@/components/calculators/ContractionTimer.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('contraction-timer')!;
+const faqs = [
+  {
+    q: 'How do I time contractions?',
+    a: 'Tap “Start” when a contraction begins and “Stop” when it ends. The timer records how long each one lasts (duration) and the time from the start of one to the start of the next (frequency).',
+  },
+  {
+    q: 'What is the 5-1-1 rule?',
+    a: 'A common guideline for first-time labour: contractions about 5 minutes apart, each lasting around 1 minute, sustained for at least 1 hour. Many providers suggest heading in around then — but always follow your own provider’s instructions.',
+  },
+  {
+    q: 'When should I call my provider or go in sooner?',
+    a: 'Call right away if your waters break, you have bleeding, reduced baby movements, severe pain, or you simply feel something’s wrong — regardless of the timer. If you’ve had a fast labour before or live far away, go sooner.',
+  },
+  {
+    q: 'Is my data private?',
+    a: 'Yes. Everything is stored only in your browser on this device — nothing is uploaded or shared. Clearing your history removes it permanently.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="A simple, private contraction timer. Tap to start and stop each contraction; it tracks duration and frequency and flags the 5-1-1 pattern."
+  faqs={faqs}
+>
+  <ContractionTimer />
+</ToolShell>

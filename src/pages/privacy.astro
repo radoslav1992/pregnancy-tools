@@ -1,0 +1,67 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+const updated = 'June 2026';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="How Mama Bloom handles your data — short version: your personal pregnancy data stays on your device. We don’t collect or sell it."
+  path="/privacy/"
+>
+  <section class="section">
+    <div class="wrap narrow prose">
+      <p class="eyebrow">Privacy</p>
+      <h1>Privacy policy</h1>
+      <p class="note">Last updated: {updated}</p>
+
+      <div class="callout">
+        <p class="note" style="margin:0">
+          <b>The short version:</b> the dates and details you enter stay in your browser on your
+          device. We don’t have a server that collects them, and we don’t sell your data — ever.
+        </p>
+      </div>
+
+      <h2>Information you enter</h2>
+      <p>
+        Calculators on {site.name} (due date, ovulation, hCG, weight gain, contraction timer) run
+        entirely in your browser. Any values you type are processed on your device. Where we save
+        something for your convenience — such as your due date or contraction history — it’s stored
+        in your browser’s local storage and never transmitted to us.
+      </p>
+
+      <h2>Analytics</h2>
+      <p>
+        We aim to keep {site.name} privacy-friendly. If we use analytics, we choose tools that are
+        cookie-light and do not build advertising profiles of you. We do not run third-party
+        advertising trackers.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        The core experience does not require cookies. Your browser may store small amounts of data
+        (like your saved due date) in local storage, which you can clear at any time from your
+        browser settings.
+      </p>
+
+      <h2>Third-party services</h2>
+      <p>
+        We load fonts from Google Fonts and host the site on Cloudflare’s network, which may process
+        limited technical request data (such as IP addresses) to deliver and secure the site, as
+        described in their own policies.
+      </p>
+
+      <h2>Children</h2>
+      <p>This site is intended for adults and is not directed at children under 13.</p>
+
+      <h2>Changes</h2>
+      <p>
+        We may update this policy from time to time. Material changes will be reflected by the “last
+        updated” date above.
+      </p>
+
+      <h2>Contact</h2>
+      <p>Questions about privacy? Reach out and we’ll be glad to help.</p>
+    </div>
+  </section>
+</BaseLayout>

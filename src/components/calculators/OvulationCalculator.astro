@@ -1,0 +1,94 @@
+---
+// Estimates ovulation day and the fertile window from cycle data.
+---
+
+<div class="ovu card">
+  <div class="fld">
+    <label for="ovu-lmp">First day of your last period</label>
+    <input type="date" id="ovu-lmp" />
+  </div>
+  <div class="fld">
+    <label for="ovu-cycle">Average cycle length <span class="hint">— defaults to 28 days</span></label>
+    <select id="ovu-cycle"></select>
+  </div>
+
+  <button class="btn block" id="ovu-calc" style="margin-top:6px">Find my fertile window</button>
+  <p class="calc-err" id="ovu-err" role="alert"></p>
+
+  <div class="calc-result" id="ovu-result" hidden>
+    <div class="big-stat">
+      <p class="k">Most likely ovulation day</p>
+      <p class="v" id="ovu-day">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Fertile window opens</p><p class="v" id="ovu-open">—</p></div>
+      <div class="cell"><p class="k">Fertile window closes</p><p class="v" id="ovu-close">—</p></div>
+      <div class="cell"><p class="k">If you conceive, due date</p><p class="v" id="ovu-edd">—</p></div>
+      <div class="cell"><p class="k">Next period (if not)</p><p class="v" id="ovu-next">—</p></div>
+    </div>
+    <a class="cta-link" id="ovu-cta" href="/tools/due-date-calculator/">
+      Already expecting? Calculate your due date →
+    </a>
+  </div>
+</div>
+
+<style>
+  .ovu { padding: clamp(18px, 4vw, 24px); }
+  .cta-link {
+    display: inline-block; margin-top: 16px; font-weight: 600; font-size: 0.92rem;
+    color: var(--mulberry-deep); text-decoration: none;
+  }
+  .cta-link:hover { text-decoration: underline; }
+</style>
+
+<script>
+  const DAY = 86400000;
+  const $ = (id: string) => document.getElementById(id);
+
+  const cyc = $('ovu-cycle') as HTMLSelectElement | null;
+  if (cyc) {
+    for (let d = 20; d <= 40; d++) {
+      const o = document.createElement('option');
+      o.value = String(d);
+      o.textContent = d + ' days';
+      if (d === 28) o.selected = true;
+      cyc.appendChild(o);
+    }
+  }
+
+  function addDays(dt: Date, n: number) { return new Date(dt.getTime() + n * DAY); }
+  function fmt(dt: Date) {
+    return dt.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function fmtShort(dt: Date) {
+    return dt.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  }
+
+  const err = $('ovu-err');
+  function fail(msg: string) { if (err) { err.textContent = msg; err.classList.add('show'); } }
+
+  $('ovu-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    const v = ($('ovu-lmp') as HTMLInputElement).value;
+    if (!v) return fail('Please enter the first day of your last period.');
+    const lmp = new Date(v + 'T00:00:00');
+    const cycle = +(cyc?.value || 28);
+
+    // Ovulation ~14 days before the next period (luteal phase is fairly constant).
+    const ovulation = addDays(lmp, cycle - 14);
+    const fertileOpen = addDays(ovulation, -5); // sperm survive up to ~5 days
+    const fertileClose = addDays(ovulation, 1); // egg viable ~24h
+    const edd = addDays(ovulation, 266);
+    const nextPeriod = addDays(lmp, cycle);
+
+    ($('ovu-day') as HTMLElement).textContent = fmt(ovulation);
+    ($('ovu-open') as HTMLElement).textContent = fmtShort(fertileOpen);
+    ($('ovu-close') as HTMLElement).textContent = fmtShort(fertileClose);
+    ($('ovu-edd') as HTMLElement).textContent = fmtShort(edd);
+    ($('ovu-next') as HTMLElement).textContent = fmtShort(nextPeriod);
+
+    const r = $('ovu-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

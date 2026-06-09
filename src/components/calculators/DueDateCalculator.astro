@@ -1,0 +1,301 @@
+---
+// The flagship calculator, ported from the original tool and wired to the
+// week-by-week tracker. Persists the result to localStorage so the rest of the
+// site can greet returning visitors with "your week".
+---
+
+<div class="ddc card">
+  <div class="tabs" role="tablist" aria-label="Calculation method">
+    <button class="tab" role="tab" aria-selected="true" data-method="lmp">Last period</button>
+    <button class="tab" role="tab" aria-selected="false" data-method="conc">Conception</button>
+    <button class="tab" role="tab" aria-selected="false" data-method="ivf">IVF transfer</button>
+  </div>
+
+  <div class="seg active" data-seg="lmp">
+    <div class="field">
+      <label for="ddc-lmp">First day of your last period</label>
+      <input type="date" id="ddc-lmp" />
+    </div>
+    <div class="field">
+      <label for="ddc-cycle">Average cycle length <span class="hint">— defaults to 28 days</span></label>
+      <select id="ddc-cycle"></select>
+    </div>
+  </div>
+
+  <div class="seg" data-seg="conc">
+    <div class="field">
+      <label for="ddc-conc">Date of conception or ovulation</label>
+      <input type="date" id="ddc-conc" />
+    </div>
+  </div>
+
+  <div class="seg" data-seg="ivf">
+    <div class="two">
+      <div class="field">
+        <label for="ddc-ivf">Embryo transfer date</label>
+        <input type="date" id="ddc-ivf" />
+      </div>
+      <div class="field">
+        <label for="ddc-ivfage">Embryo age</label>
+        <select id="ddc-ivfage">
+          <option value="5">Day-5 (blastocyst)</option>
+          <option value="3">Day-3</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="go" id="ddc-calc">Calculate due date</button>
+  <p class="err" id="ddc-err" role="alert"></p>
+
+  <div class="result" id="ddc-result" hidden>
+    <div class="arcwrap">
+      <svg class="arc" viewBox="0 0 320 200" role="img" aria-labelledby="ddc-arctitle">
+        <title id="ddc-arctitle">Progress through 40 weeks of pregnancy</title>
+        <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+          stroke="var(--peach)" stroke-dasharray="32.5 100" stroke-dashoffset="0"></path>
+        <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+          stroke="var(--sage)" stroke-dasharray="35 100" stroke-dashoffset="-32.5"></path>
+        <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+          stroke="var(--mulberry)" stroke-dasharray="32.5 100" stroke-dashoffset="-67.5"></path>
+        <path class="prog" id="ddc-prog" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+          stroke-dasharray="0 100"></path>
+        <circle class="marker" id="ddc-marker" cx="20" cy="170" r="7"></circle>
+        <text class="weeknow" id="ddc-weeknow" x="160" y="150" text-anchor="middle">—</text>
+        <text class="weeklbl" x="160" y="172" text-anchor="middle">of 40 weeks</text>
+      </svg>
+    </div>
+
+    <div class="edd">
+      <p class="k">Estimated due date</p>
+      <p class="v" id="ddc-eddVal">—</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><p class="k">How far along</p><p class="v" id="ddc-ga">—</p></div>
+      <div class="stat"><p class="k">Trimester</p><p class="v" id="ddc-tri">—</p></div>
+      <div class="stat"><p class="k">Days to go</p><p class="v" id="ddc-left">—</p></div>
+      <div class="stat"><p class="k">Conception (est.)</p><p class="v" id="ddc-conEst">—</p></div>
+    </div>
+
+    <a class="cta" id="ddc-cta" href="#">
+      <span id="ddc-ctaText">See your week<small>What's developing right now</small></span>
+      <span class="arr">→</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .ddc { padding: clamp(18px, 4vw, 24px); }
+
+  .tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+  .tab {
+    flex: 1; border: 0; background: transparent; cursor: pointer; border-radius: 9px;
+    padding: 9px 6px; font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--ink-soft);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  }
+  .tab[aria-selected='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(58, 46, 63, 0.12); }
+
+  .field { margin-bottom: 16px; }
+  .field:last-of-type { margin-bottom: 0; }
+  label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 7px; color: var(--ink); }
+  .hint { font-weight: 400; color: var(--ink-soft); }
+  input[type='date'], select {
+    width: 100%; font: inherit; font-size: 1rem; color: var(--ink);
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 11px; background: #fff;
+    appearance: none; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type='date']:focus, select:focus {
+    outline: 0; border-color: var(--mulberry); box-shadow: 0 0 0 3px rgba(176, 112, 137, 0.18);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236a5a6e' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px;
+  }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .seg { display: none; }
+  .seg.active { display: block; }
+
+  button.go {
+    width: 100%; margin-top: 20px; border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: 1rem;
+    color: #fff; background: var(--mulberry); padding: 14px; border-radius: 12px;
+    transition: background 0.18s, transform 0.05s;
+  }
+  button.go:hover { background: var(--mulberry-deep); }
+  button.go:active { transform: translateY(1px); }
+
+  .result { margin-top: 8px; }
+  .result[hidden] { display: none; }
+  .arcwrap { text-align: center; margin: 6px 0 4px; }
+  svg.arc { width: 100%; max-width: 320px; height: auto; margin-inline: auto; }
+  .arc .track { fill: none; stroke-width: 15; stroke-linecap: round; }
+  .arc .prog {
+    fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round;
+    transition: stroke-dasharray 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .arc .marker { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+  .weeknow { font-family: var(--serif); font-size: 2.4rem; font-weight: 500; fill: var(--ink); }
+  .weeklbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--ink-soft); }
+
+  .edd {
+    text-align: center; margin: 10px 0 22px; padding: 18px; border-radius: 14px;
+    background: linear-gradient(160deg, #fdf3ee, #faeef0); border: 1px solid var(--line);
+  }
+  .edd .k { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mulberry-deep); margin: 0 0 4px; }
+  .edd .v { font-family: var(--serif); font-size: clamp(1.5rem, 6vw, 1.95rem); font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; }
+  .stat .k { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 3px; }
+  .stat .v { font-family: var(--serif); font-size: 1.22rem; font-weight: 500; margin: 0; }
+  .stat .v small { font-family: var(--sans); font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); }
+  .tri-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+
+  .cta {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; text-decoration: none; color: var(--ink);
+    background: var(--surface); border: 1.5px solid var(--mulberry); border-radius: 12px;
+    padding: 14px 16px; font-weight: 600; transition: background 0.15s;
+  }
+  .cta:hover { background: #fdf3ee; }
+  .cta span small { display: block; font-weight: 400; font-size: 0.8rem; color: var(--ink-soft); }
+  .cta .arr { font-size: 1.2rem; color: var(--mulberry-deep); }
+
+  .err { color: var(--danger); font-size: 0.88rem; margin-top: 14px; display: none; }
+  .err.show { display: block; }
+
+  @media (max-width: 380px) { .stats { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .arc .prog { transition: none; } }
+</style>
+
+<script>
+  const DAY = 86400000;
+  let method = 'lmp';
+
+  const $ = (id: string) => document.getElementById(id);
+
+  const cyc = $('ddc-cycle') as HTMLSelectElement | null;
+  if (cyc) {
+    for (let d = 20; d <= 40; d++) {
+      const o = document.createElement('option');
+      o.value = String(d);
+      o.textContent = d + ' days';
+      if (d === 28) o.selected = true;
+      cyc.appendChild(o);
+    }
+  }
+
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.ddc .tab'));
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => {
+      method = t.dataset.method || 'lmp';
+      tabs.forEach((x) => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
+      document.querySelectorAll<HTMLElement>('.ddc .seg').forEach((s) => {
+        s.classList.toggle('active', s.dataset.seg === method);
+      });
+    });
+  });
+
+  function parse(id: string): Date | null {
+    const el = $(id) as HTMLInputElement | null;
+    const v = el?.value;
+    return v ? new Date(v + 'T00:00:00') : null;
+  }
+  function fmt(dt: Date): string {
+    return dt.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function fmtShort(dt: Date): string {
+    return dt.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function addDays(dt: Date, n: number): Date {
+    return new Date(dt.getTime() + n * DAY);
+  }
+
+  const CX = 160, CY = 170, R = 140;
+  function arcPoint(frac: number) {
+    const ang = ((180 - 180 * frac) * Math.PI) / 180;
+    return { x: CX + R * Math.cos(ang), y: CY - R * Math.sin(ang) };
+  }
+
+  const err = $('ddc-err');
+  function fail(msg: string) {
+    if (!err) return;
+    err.textContent = msg;
+    err.classList.add('show');
+  }
+
+  $('ddc-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    let edd: Date, effLMP: Date;
+
+    if (method === 'lmp') {
+      const lmp = parse('ddc-lmp');
+      if (!lmp) return fail('Please enter the first day of your last period.');
+      const cycle = +(cyc?.value || 28);
+      edd = addDays(lmp, 280 + (cycle - 28));
+      effLMP = lmp;
+    } else if (method === 'conc') {
+      const c = parse('ddc-conc');
+      if (!c) return fail('Please enter your conception or ovulation date.');
+      edd = addDays(c, 266);
+      effLMP = addDays(edd, -280);
+    } else {
+      const tr = parse('ddc-ivf');
+      if (!tr) return fail('Please enter your embryo transfer date.');
+      const age = +((($('ddc-ivfage') as HTMLSelectElement)?.value) || 5);
+      edd = addDays(tr, 266 - age);
+      effLMP = addDays(edd, -280);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let gaDays = Math.round((today.getTime() - effLMP.getTime()) / DAY);
+
+    if (gaDays < -7) return fail("That date is in the future — double-check it, or this pregnancy hasn't started yet.");
+    if (gaDays > 308) return fail('That works out to over 44 weeks — please double-check the date you entered.');
+
+    if (gaDays < 0) gaDays = 0;
+    const wk = Math.floor(gaDays / 7);
+    const dd = gaDays % 7;
+    const frac = Math.max(0, Math.min(1, gaDays / 280));
+    const daysLeft = Math.round((edd.getTime() - today.getTime()) / DAY);
+
+    const triNum = wk < 14 ? 1 : wk < 28 ? 2 : 3;
+    const triColors = ['', 'var(--peach)', 'var(--sage)', 'var(--mulberry)'];
+    const triNames = ['', 'First', 'Second', 'Third'];
+
+    ($('ddc-eddVal') as HTMLElement).textContent = fmt(edd);
+    ($('ddc-ga') as HTMLElement).innerHTML = wk + ' <small>wk</small> ' + dd + ' <small>d</small>';
+    ($('ddc-tri') as HTMLElement).innerHTML =
+      '<span class="tri-dot" style="background:' + triColors[triNum] + '"></span>' + triNames[triNum];
+    ($('ddc-left') as HTMLElement).innerHTML = daysLeft <= 0 ? 'Any day now' : daysLeft + ' <small>days</small>';
+    ($('ddc-conEst') as HTMLElement).textContent = fmtShort(addDays(effLMP, 14));
+    ($('ddc-weeknow') as HTMLElement).textContent = String(wk);
+
+    $('ddc-prog')?.setAttribute('stroke-dasharray', (frac * 100).toFixed(2) + ' 100');
+    const p = arcPoint(frac);
+    const m = $('ddc-marker');
+    m?.setAttribute('cx', p.x.toFixed(1));
+    m?.setAttribute('cy', p.y.toFixed(1));
+
+    const ctaWk = Math.min(Math.max(wk, 1), 40);
+    const cta = $('ddc-cta') as HTMLAnchorElement;
+    cta.href = '/pregnancy/week-' + ctaWk + '/';
+    ($('ddc-ctaText') as HTMLElement).innerHTML =
+      'See week ' + ctaWk + "<small>What's developing right now</small>";
+
+    // Persist for cross-page personalisation (private to this device).
+    try {
+      localStorage.setItem(
+        'mb_pregnancy',
+        JSON.stringify({ edd: edd.toISOString(), savedAt: Date.now() })
+      );
+    } catch (e) {
+      /* storage may be unavailable; non-fatal */
+    }
+
+    const result = $('ddc-result') as HTMLElement;
+    result.hidden = false;
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

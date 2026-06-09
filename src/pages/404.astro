@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { tools } from '@/data/tools';
+import ToolCard from '@/components/ToolCard.astro';
+---
+
+<BaseLayout title="Page not found" description="We couldn’t find that page." path="/404/" noindex>
+  <section class="section">
+    <div class="wrap narrow center" style="text-align:center">
+      <p style="font-size:3rem; margin:0">🍼</p>
+      <h1>This page took a nap</h1>
+      <p class="lede" style="margin-inline:auto">
+        We couldn’t find what you were looking for. Let’s get you back on track.
+      </p>
+      <p style="margin-top:20px">
+        <a class="btn" href="/">Go home</a>
+        <a class="btn ghost" href="/pregnancy/" style="margin-left:8px">Week by week</a>
+      </p>
+    </div>
+  </section>
+  <section class="section alt" style="background:var(--surface);border-top:1px solid var(--line)">
+    <div class="wrap">
+      <h2>Popular tools</h2>
+      <div class="grid cols-2" style="margin-top:18px">
+        {tools.slice(0, 4).map((t) => <ToolCard tool={t} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
