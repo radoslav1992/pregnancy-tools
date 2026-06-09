@@ -25,6 +25,8 @@ export const site = {
   /** Publication / last-review dates for evergreen editorial content (ISO). */
   contentPublished: '2025-03-01',
   contentReviewed: '2025-06-01',
+  /** Google Analytics 4 measurement ID. Empty string disables the tag. */
+  gaId: 'G-R3Z45FT46B',
 } as const;
 
 /**
