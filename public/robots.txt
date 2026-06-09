@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /offline/
 
-Sitemap: https://pregnancy-tools.pages.dev/sitemap-index.xml
+Sitemap: https://pregnancyandbaby.tools/sitemap-index.xml

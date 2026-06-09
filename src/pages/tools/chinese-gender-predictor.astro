@@ -1,0 +1,29 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import ChineseGenderPredictor from '@/components/calculators/ChineseGenderPredictor.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('chinese-gender-predictor')!;
+const faqs = [
+  {
+    q: 'How does the Chinese gender chart work?',
+    a: 'The traditional chart cross-references the mother’s lunar age at conception with the lunar month she conceived to predict boy or girl. Legend says the original was buried in a royal tomb near Beijing centuries ago.',
+  },
+  {
+    q: 'Is it actually accurate?',
+    a: 'No — there’s no scientific basis, and studies put its accuracy at around 50%, the same as a coin toss. It’s a fun tradition, not a medical tool.',
+  },
+  {
+    q: 'How can I really find out my baby’s sex?',
+    a: 'A mid-pregnancy ultrasound (usually around 18–22 weeks) or genetic testing such as NIPT (from about 10 weeks) are the reliable ways to find out — if you want to know before birth.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="The centuries-old Chinese gender chart guesses boy or girl from the mother’s age and the month of conception. A playful tradition — not science!"
+  faqs={faqs}
+>
+  <ChineseGenderPredictor />
+</ToolShell>

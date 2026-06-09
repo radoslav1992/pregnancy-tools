@@ -1,0 +1,29 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import ConceptionDateCalculator from '@/components/calculators/ConceptionDateCalculator.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('conception-date-calculator')!;
+const faqs = [
+  {
+    q: 'How is the conception date estimated?',
+    a: 'Conception happens around ovulation. We estimate it as about 266 days before your due date, or roughly two weeks after your last period began (adjusted for your cycle length). Because sperm can survive several days, we also show a likely range.',
+  },
+  {
+    q: 'Can I know the exact day I conceived?',
+    a: 'Almost never — even with a known ovulation date, fertilisation can happen over a window of a few days. That’s why we show a range rather than a single guaranteed day.',
+  },
+  {
+    q: 'Why might this matter?',
+    a: 'People estimate conception for all sorts of reasons — curiosity, paperwork, or working out a timeline. Remember it’s an estimate; your provider’s dating from an early scan is the most reliable.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="Work backwards from your due date or last period to estimate when conception likely happened — with a realistic date range, because the exact day is rarely knowable."
+  faqs={faqs}
+>
+  <ConceptionDateCalculator />
+</ToolShell>

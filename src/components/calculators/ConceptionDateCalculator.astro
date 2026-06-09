@@ -1,0 +1,119 @@
+---
+// Estimates the likely conception date from a due date or last period.
+---
+
+<div class="cdc card">
+  <div class="tabs" role="tablist" aria-label="What do you know?">
+    <button class="tab" role="tab" aria-selected="true" data-m="edd">From my due date</button>
+    <button class="tab" role="tab" aria-selected="false" data-m="lmp">From my last period</button>
+  </div>
+
+  <div class="seg active" data-seg="edd">
+    <div class="fld">
+      <label for="cdc-edd">Estimated due date</label>
+      <input type="date" id="cdc-edd" />
+    </div>
+  </div>
+  <div class="seg" data-seg="lmp">
+    <div class="fld">
+      <label for="cdc-lmp">First day of your last period</label>
+      <input type="date" id="cdc-lmp" />
+    </div>
+    <div class="fld">
+      <label for="cdc-cycle">Average cycle length <span class="hint">— defaults to 28 days</span></label>
+      <select id="cdc-cycle"></select>
+    </div>
+  </div>
+
+  <button class="btn block" id="cdc-calc" style="margin-top:6px">Estimate conception date</button>
+  <p class="calc-err" id="cdc-err" role="alert"></p>
+
+  <div class="calc-result" id="cdc-result" hidden>
+    <div class="big-stat">
+      <p class="k">Most likely conception</p>
+      <p class="v" id="cdc-date">—</p>
+      <p class="sub" id="cdc-range">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Fertile window</p><p class="v" id="cdc-window">—</p></div>
+      <div class="cell"><p class="k">Implantation (approx.)</p><p class="v" id="cdc-impl">—</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">
+      Conception usually happens around ovulation — roughly two weeks after your last period began,
+      or about 266 days before your due date. The exact day is rarely knowable, so treat this as a
+      best estimate.
+    </p>
+  </div>
+</div>
+
+<style>
+  .cdc { padding: clamp(18px, 4vw, 24px); }
+  .tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+  .tab {
+    flex: 1; border: 0; background: transparent; cursor: pointer; border-radius: 9px;
+    padding: 9px 6px; font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--ink-soft);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  }
+  .tab[aria-selected='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(58, 46, 63, 0.12); }
+  .seg { display: none; }
+  .seg.active { display: block; }
+</style>
+
+<script>
+  const DAY = 86400000;
+  const $ = (id: string) => document.getElementById(id);
+  let mode = 'edd';
+
+  const cyc = $('cdc-cycle') as HTMLSelectElement | null;
+  if (cyc) {
+    for (let d = 20; d <= 40; d++) {
+      const o = document.createElement('option');
+      o.value = String(d); o.textContent = d + ' days';
+      if (d === 28) o.selected = true;
+      cyc.appendChild(o);
+    }
+  }
+
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.cdc .tab'));
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => {
+      mode = t.dataset.m || 'edd';
+      tabs.forEach((x) => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
+      document.querySelectorAll<HTMLElement>('.cdc .seg').forEach((s) =>
+        s.classList.toggle('active', s.dataset.seg === mode)
+      );
+    });
+  });
+
+  const addDays = (d: Date, n: number) => new Date(d.getTime() + n * DAY);
+  const fmt = (d: Date) => d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+  const fmtShort = (d: Date) => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+  const err = $('cdc-err');
+  const fail = (m: string) => { if (err) { err.textContent = m; err.classList.add('show'); } };
+
+  $('cdc-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    let conception: Date;
+    if (mode === 'edd') {
+      const v = ($('cdc-edd') as HTMLInputElement).value;
+      if (!v) return fail('Please enter your due date.');
+      conception = addDays(new Date(v + 'T00:00:00'), -266);
+    } else {
+      const v = ($('cdc-lmp') as HTMLInputElement).value;
+      if (!v) return fail('Please enter the first day of your last period.');
+      const cycle = +(cyc?.value || 28);
+      conception = addDays(new Date(v + 'T00:00:00'), cycle - 14);
+    }
+
+    const set = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+    set('cdc-date', fmt(conception));
+    set('cdc-range', `Likely between ${fmtShort(addDays(conception, -3))} and ${fmtShort(addDays(conception, 2))}`);
+    set('cdc-window', `${fmtShort(addDays(conception, -5))} – ${fmtShort(addDays(conception, 1))}`);
+    set('cdc-impl', `${fmtShort(addDays(conception, 6))} – ${fmtShort(addDays(conception, 12))}`);
+
+    const r = $('cdc-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

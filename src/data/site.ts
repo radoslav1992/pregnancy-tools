@@ -6,7 +6,7 @@ export const site = {
   description:
     'Free pregnancy due-date calculator, week-by-week tracker, and a suite of friendly tools — calm, fast, private, and works offline.',
   /** Canonical production origin. Override with SITE_URL env at build time. */
-  url: 'https://pregnancy-tools.pages.dev',
+  url: 'https://pregnancyandbaby.tools',
   locale: 'en',
   themeColor: '#b07089',
   twitter: '@mamabloom',
@@ -19,6 +19,7 @@ export interface NavItem {
 }
 
 export const primaryNav: NavItem[] = [
+  { label: 'My pregnancy', href: '/my-pregnancy/' },
   { label: 'Week by week', href: '/pregnancy/' },
   { label: 'Tools', href: '/tools/' },
   { label: 'Guides', href: '/blog/' },

@@ -1,0 +1,227 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DueDateCalculator from '@/components/calculators/DueDateCalculator.astro';
+import { MEDICAL_DISCLAIMER } from '@/data/site';
+---
+
+<BaseLayout
+  title="My Pregnancy Dashboard"
+  description="Your personal pregnancy dashboard — your week, your countdown, and optional weekly reminders. Private to your device."
+  path="/my-pregnancy/"
+  noindex
+>
+  <section class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">My pregnancy</p>
+
+      <!-- Empty state -->
+      <div id="mb-empty">
+        <h1>Let’s set up your dashboard</h1>
+        <p class="lede">
+          Enter your dates once and this page becomes your personal home base — your current week,
+          your countdown, and gentle weekly reminders. Everything stays private on your device.
+        </p>
+        <div style="margin-top:24px">
+          <DueDateCalculator />
+        </div>
+      </div>
+
+      <!-- Active dashboard -->
+      <div id="mb-active" hidden>
+        <h1 id="mb-greeting">Welcome back 🌸</h1>
+        <p class="lede" id="mb-summary">—</p>
+
+        <div class="card mb-hero">
+          <div class="arcwrap">
+            <svg viewBox="0 0 320 200" role="img" aria-label="Pregnancy progress">
+              <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+                stroke="var(--peach)" stroke-dasharray="32.5 100" stroke-dashoffset="0"></path>
+              <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+                stroke="var(--sage)" stroke-dasharray="35 100" stroke-dashoffset="-32.5"></path>
+              <path class="track" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+                stroke="var(--mulberry)" stroke-dasharray="32.5 100" stroke-dashoffset="-67.5"></path>
+              <path class="prog" id="mb-prog" d="M20 170 A140 140 0 0 1 300 170" pathLength="100"
+                stroke-dasharray="0 100"></path>
+              <circle class="marker" id="mb-marker" cx="20" cy="170" r="7"></circle>
+              <text class="weeknow" id="mb-weeknow" x="160" y="150" text-anchor="middle">—</text>
+              <text class="weeklbl" x="160" y="172" text-anchor="middle">of 40 weeks</text>
+            </svg>
+          </div>
+          <p class="mb-size" id="mb-size">—</p>
+          <a class="btn block" id="mb-weeklink" href="/pregnancy/">See this week in detail →</a>
+        </div>
+
+        <div class="stat-grid" style="margin-top:16px">
+          <div class="cell"><p class="k">How far along</p><p class="v" id="mb-ga">—</p></div>
+          <div class="cell"><p class="k">Days to go</p><p class="v" id="mb-left">—</p></div>
+          <div class="cell"><p class="k">Trimester</p><p class="v" id="mb-tri">—</p></div>
+          <div class="cell"><p class="k">Due date</p><p class="v" id="mb-edd">—</p></div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="card notif" id="mb-notif" style="margin-top:16px">
+          <div class="notif-row">
+            <span class="emoji" aria-hidden="true">🔔</span>
+            <div>
+              <h2>Weekly milestone reminders</h2>
+              <p class="note" id="mb-notif-status">
+                Get a gentle nudge each week with your baby’s new size and what’s developing.
+              </p>
+            </div>
+          </div>
+          <button class="btn" id="mb-notif-btn">Enable reminders</button>
+        </div>
+
+        <div class="mb-tools">
+          <a href="/pregnancy/" class="pill-link">📅 Week by week</a>
+          <a href="/tools/contraction-timer/" class="pill-link">⏱️ Contraction timer</a>
+          <a href="/tools/weight-gain-calculator/" class="pill-link">⚖️ Weight gain</a>
+          <button id="mb-reset" class="pill-link danger" type="button">✕ Clear my data</button>
+        </div>
+
+        <div class="callout" style="margin-top:22px">
+          <p class="note"><b>A gentle reminder:</b> {MEDICAL_DISCLAIMER}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mb-hero { text-align: center; padding: clamp(18px, 4vw, 24px); }
+  .arcwrap { max-width: 320px; margin: 0 auto; }
+  .arcwrap svg { width: 100%; height: auto; }
+  .track { fill: none; stroke-width: 15; stroke-linecap: round; }
+  .prog { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; transition: stroke-dasharray 1s cubic-bezier(0.22, 1, 0.36, 1); }
+  .marker { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+  .weeknow { font-family: var(--serif); font-size: 2.4rem; font-weight: 500; fill: var(--ink); }
+  .weeklbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--ink-soft); }
+  .mb-size { font-family: var(--serif); font-size: 1.1rem; color: var(--mulberry-deep); margin: 4px 0 16px; }
+
+  .notif-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+  .notif-row .emoji { font-size: 1.6rem; }
+  .notif h2 { font-size: 1.1rem; margin: 0 0 4px; }
+  .notif .btn { width: 100%; }
+
+  .mb-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .pill-link {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 15px; font-size: 0.88rem; font-weight: 600; color: var(--ink); cursor: pointer; font-family: inherit;
+  }
+  .pill-link:hover { border-color: var(--mulberry); }
+  .pill-link.danger { color: var(--danger); }
+
+  @media (prefers-reduced-motion: reduce) { .prog { transition: none; } }
+</style>
+
+<script>
+  import { loadPregnancy, clearPregnancy, progressFromEdd } from '@/lib/store';
+  import { fruitForWeek } from '@/lib/sizes';
+
+  const $ = (id: string) => document.getElementById(id);
+  const preg = loadPregnancy();
+
+  if (preg) {
+    ($('mb-empty') as HTMLElement).hidden = true;
+    ($('mb-active') as HTMLElement).hidden = false;
+    renderDashboard(new Date(preg.edd));
+  }
+
+  function arcPoint(frac: number) {
+    const CX = 160, CY = 170, R = 140;
+    const ang = ((180 - 180 * frac) * Math.PI) / 180;
+    return { x: CX + R * Math.cos(ang), y: CY - R * Math.sin(ang) };
+  }
+
+  function renderDashboard(edd: Date) {
+    const p = progressFromEdd(edd);
+    const triNames = ['', 'First', 'Second', 'Third'];
+    const triColors = ['', 'var(--peach)', 'var(--sage)', 'var(--mulberry)'];
+    const wk = Math.min(Math.max(p.week, 1), 40);
+    const fruit = fruitForWeek(wk);
+    const set = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+    const setHtml = (id: string, t: string) => { const el = $(id); if (el) el.innerHTML = t; };
+
+    set('mb-greeting', `You’re in week ${p.week} 🌸`);
+    set('mb-summary', p.daysLeft > 0
+      ? `${p.daysLeft} days to go until your due date. Here’s where you are today.`
+      : `You’re at the finish line — any day now!`);
+    set('mb-weeknow', String(p.week));
+    set('mb-size', `Your baby is about the size of ${fruit}.`);
+    setHtml('mb-ga', `${p.week} <small style="font-size:0.6em;color:var(--ink-soft)">wk</small> ${p.day} <small style="font-size:0.6em;color:var(--ink-soft)">d</small>`);
+    set('mb-left', p.daysLeft <= 0 ? 'Any day now' : `${p.daysLeft} days`);
+    setHtml('mb-tri', `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:${triColors[p.trimester]}"></span>${triNames[p.trimester]}`);
+    set('mb-edd', edd.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }));
+
+    ($('mb-prog') as Element).setAttribute('stroke-dasharray', `${(p.frac * 100).toFixed(2)} 100`);
+    const pt = arcPoint(p.frac);
+    const m = $('mb-marker');
+    m?.setAttribute('cx', pt.x.toFixed(1));
+    m?.setAttribute('cy', pt.y.toFixed(1));
+    ($('mb-weeklink') as HTMLAnchorElement).href = `/pregnancy/week-${wk}/`;
+  }
+
+  // Clear data
+  $('mb-reset')?.addEventListener('click', () => {
+    if (!confirm('Clear your saved pregnancy from this device?')) return;
+    clearPregnancy();
+    location.reload();
+  });
+
+  // Notifications opt-in
+  const notifBtn = $('mb-notif-btn') as HTMLButtonElement | null;
+  const notifStatus = $('mb-notif-status');
+
+  function setStatus(msg: string) { if (notifStatus) notifStatus.textContent = msg; }
+
+  if (notifBtn) {
+    if (!('Notification' in window)) {
+      notifBtn.disabled = true;
+      notifBtn.textContent = 'Not supported here';
+      setStatus('Your browser doesn’t support notifications.');
+    } else if (Notification.permission === 'granted') {
+      notifBtn.textContent = 'Reminders on ✓';
+      notifBtn.disabled = true;
+      setStatus('You’ll get a gentle nudge as each new week begins.');
+      void registerPeriodic();
+    }
+
+    notifBtn.addEventListener('click', async () => {
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') {
+          setStatus('No problem — you can enable reminders any time from this page.');
+          return;
+        }
+        await registerPeriodic();
+        notifBtn.textContent = 'Reminders on ✓';
+        notifBtn.disabled = true;
+        setStatus('All set! You’ll get a gentle nudge as each new week begins.');
+        // Nudge the SW to confirm with the current week.
+        const reg = await navigator.serviceWorker.ready;
+        reg.active?.postMessage({ type: 'mb-check-week' });
+      } catch {
+        setStatus('Something went wrong enabling reminders — please try again.');
+      }
+    });
+  }
+
+  async function registerPeriodic() {
+    try {
+      const reg = (await navigator.serviceWorker.ready) as ServiceWorkerRegistration & {
+        periodicSync?: { register: (tag: string, opts: { minInterval: number }) => Promise<void> };
+      };
+      const status = await (navigator.permissions as Permissions & {
+        query: (d: { name: string }) => Promise<PermissionStatus>;
+      })
+        .query({ name: 'periodic-background-sync' })
+        .catch(() => null);
+      if (reg.periodicSync && (!status || status.state === 'granted')) {
+        await reg.periodicSync.register('mb-week-check', { minInterval: 24 * 60 * 60 * 1000 });
+      }
+    } catch {
+      /* Periodic Background Sync unsupported — foreground reminders still work on open. */
+    }
+  }
+</script>

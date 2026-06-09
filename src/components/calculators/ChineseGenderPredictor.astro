@@ -1,0 +1,93 @@
+---
+// The traditional Chinese gender chart — a novelty, not science.
+// Uses the mother's lunar age and the lunar month of conception.
+---
+
+<div class="cgp card">
+  <div class="fld">
+    <label for="cgp-dob">Mother’s date of birth</label>
+    <input type="date" id="cgp-dob" />
+  </div>
+  <div class="fld">
+    <label for="cgp-con">Date of conception <span class="hint">— or roughly when you became pregnant</span></label>
+    <input type="date" id="cgp-con" />
+  </div>
+
+  <button class="btn block" id="cgp-calc" style="margin-top:6px">Predict boy or girl 🎎</button>
+  <p class="calc-err" id="cgp-err" role="alert"></p>
+
+  <div class="calc-result" id="cgp-result" hidden>
+    <div class="big-stat" id="cgp-card">
+      <p class="k">The chart predicts</p>
+      <p class="v" id="cgp-out">—</p>
+      <p class="sub" id="cgp-sub">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Mother’s lunar age</p><p class="v" id="cgp-age">—</p></div>
+      <div class="cell"><p class="k">Conception month</p><p class="v" id="cgp-month">—</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">
+      <b>Just for fun!</b> The Chinese gender chart is a centuries-old tradition with no scientific
+      basis — it’s about as accurate as a coin toss (~50%). The only reliable ways to know are an
+      ultrasound or genetic testing. Enjoy the guessing game! 💛
+    </p>
+  </div>
+</div>
+
+<style>
+  .cgp { padding: clamp(18px, 4vw, 24px); }
+  .cgp .big-stat.boy { background: linear-gradient(160deg, #e6eef6, #dce8f4); }
+  .cgp .big-stat.girl { background: linear-gradient(160deg, #fdf0f3, #f9e6ee); }
+  .cgp .big-stat .v { font-size: clamp(1.8rem, 8vw, 2.6rem); }
+</style>
+
+<script>
+  const $ = (id: string) => document.getElementById(id);
+
+  function lunarAgeAt(dob: Date, when: Date): number {
+    // Traditional Chinese age ≈ Western age + 1.
+    let age = when.getFullYear() - dob.getFullYear();
+    const m = when.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && when.getDate() < dob.getDate())) age--;
+    return age + 1;
+  }
+
+  const err = $('cgp-err');
+  const fail = (m: string) => { if (err) { err.textContent = m; err.classList.add('show'); } };
+
+  $('cgp-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    const dobV = ($('cgp-dob') as HTMLInputElement).value;
+    const conV = ($('cgp-con') as HTMLInputElement).value;
+    if (!dobV) return fail('Please enter the mother’s date of birth.');
+    if (!conV) return fail('Please enter the approximate date of conception.');
+
+    const dob = new Date(dobV + 'T00:00:00');
+    const con = new Date(conV + 'T00:00:00');
+    const age = lunarAgeAt(dob, con);
+    const month = con.getMonth() + 1; // 1–12
+
+    if (age < 18 || age > 50) {
+      return fail('The traditional chart only covers mothers aged about 18–45. Please double-check the dates.');
+    }
+
+    // Traditional formula: boy when (lunar age + lunar month) is odd, else girl.
+    const isBoy = (age + month) % 2 === 1;
+
+    const monthName = con.toLocaleDateString(undefined, { month: 'long' });
+    const set = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+
+    set('cgp-out', isBoy ? 'A boy 💙' : 'A girl 💗');
+    set('cgp-sub', isBoy ? 'Tradition says blue booties!' : 'Tradition says pink booties!');
+    set('cgp-age', `${age} years`);
+    set('cgp-month', monthName);
+
+    const cardEl = $('cgp-card') as HTMLElement;
+    cardEl.classList.remove('boy', 'girl');
+    cardEl.classList.add(isBoy ? 'boy' : 'girl');
+
+    const r = $('cgp-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

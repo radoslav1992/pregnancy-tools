@@ -10,13 +10,18 @@ content hub designed for organic search traffic.
 
 ## ✨ Features
 
-- **Due Date Calculator** — three methods: last period, conception, IVF transfer.
+- **Due Date Calculator** — three methods: last period, conception, IVF transfer,
+  with a one-tap **shareable milestone card** (Web Share API + canvas).
 - **Week-by-week tracker** — all 40 weeks, each its own SEO page with baby size,
   symptoms, development and a tip.
-- **More calculators** — ovulation / fertile window, hCG doubling time, healthy
-  weight gain (IOM ranges), and a private contraction timer.
+- **8 calculators** — due date, how-far-along, conception date, ovulation,
+  hCG doubling, weight gain (IOM ranges), Chinese gender predictor (for fun),
+  and a private contraction timer.
+- **My Pregnancy dashboard** — enter your dates once and get a personal home base
+  (current week, countdown, this-week size) plus optional **weekly reminders**.
 - **Guides** — a Markdown-powered blog (content collection) ready to grow.
-- **PWA** — installable, offline-first via Workbox, app shortcuts, maskable icons.
+- **PWA** — installable, offline-first via Workbox, app shortcuts, maskable icons,
+  and weekly milestone notifications.
 - **SEO-ready** — sitemap, canonical URLs, Open Graph + Twitter cards, JSON-LD
   structured data (WebApplication, Article, FAQ, Breadcrumbs).
 - **Privacy-first** — every calculation runs in the browser; personal data never
@@ -102,6 +107,20 @@ public/
   frontmatter fields from `src/content.config.ts`.
 - **A new tool** → add an entry to `src/data/tools.ts`, build a calculator
   component, and create `src/pages/tools/<slug>.astro` wrapping it in `ToolShell`.
+
+## 🔔 Notifications
+
+Weekly milestone reminders are opt-in from the **My Pregnancy** dashboard. They
+use the **Notifications API** plus **Periodic Background Sync**, so when the PWA
+is installed (Chromium browsers), the service worker (`public/push-sw.js`) wakes
+roughly daily, checks the saved due date in IndexedDB, and notifies once per new
+week. On browsers without Periodic Background Sync, reminders surface when the
+app is next opened.
+
+The service worker also ships a `push` handler as groundwork for true
+server-sent **Web Push**. To enable that later, add a Cloudflare Worker with
+VAPID keys + a cron trigger to store subscriptions and send pushes — no client
+changes needed.
 
 ## 🌐 Internationalisation
 

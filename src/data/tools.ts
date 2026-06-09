@@ -77,6 +77,51 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: 'how-far-along',
+    title: 'How Far Along Am I?',
+    short: 'Find your week instantly.',
+    description:
+      'Know your due date but not your week? Enter it to see how far along you are, your trimester, and how many days are left.',
+    icon: '📏',
+    accent: 'sage',
+    keywords: [
+      'how far along am I',
+      'how many weeks pregnant',
+      'pregnancy week calculator',
+      'gestational age calculator',
+    ],
+  },
+  {
+    slug: 'conception-date-calculator',
+    title: 'Conception Date Calculator',
+    short: 'Estimate when you conceived.',
+    description:
+      'Work backwards from your due date or last period to estimate when conception likely happened, with a likely date range.',
+    icon: '💞',
+    accent: 'peach',
+    keywords: [
+      'conception date calculator',
+      'when did I conceive',
+      'date of conception',
+      'conception calculator from due date',
+    ],
+  },
+  {
+    slug: 'chinese-gender-predictor',
+    title: 'Chinese Gender Predictor',
+    short: 'A playful old tradition.',
+    description:
+      'The traditional Chinese gender chart uses your age and the month of conception to guess boy or girl. Just for fun — not science!',
+    icon: '🎎',
+    accent: 'mulberry',
+    keywords: [
+      'chinese gender predictor',
+      'chinese gender chart',
+      'baby gender predictor',
+      'boy or girl',
+    ],
+  },
+  {
     slug: 'contraction-timer',
     title: 'Contraction Timer',
     short: 'Time labour, tap by tap.',
