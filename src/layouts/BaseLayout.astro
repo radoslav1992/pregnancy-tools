@@ -48,6 +48,27 @@ const { bare = false, ...seo } = Astro.props;
 
     <Seo {...seo} />
     {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
+
+    {
+      site.gaId && (
+        <Fragment>
+          <link rel="preconnect" href="https://www.googletagmanager.com" />
+          <script
+            async
+            is:inline
+            src={`https://www.googletagmanager.com/gtag/js?id=${site.gaId}`}
+          />
+          <script is:inline define:vars={{ gaId: site.gaId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', gaId);
+          </script>
+        </Fragment>
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
