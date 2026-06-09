@@ -11,8 +11,11 @@ interface Props {
   description?: string;
   path?: string;
   image?: string;
+  imageAlt?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   /** Hide the header/footer chrome (e.g. for the offline page). */
   bare?: boolean;

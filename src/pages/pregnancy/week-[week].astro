@@ -23,6 +23,7 @@ const my = CY - R * Math.sin(ang);
 
 const accent = trimesterAccent(data.trimester);
 const weeksToGo = Math.max(0, 40 - weekNum);
+const canonicalUrl = `${site.url}/pregnancy/week-${weekNum}/`;
 
 function lengthIn(cm: number) {
   return (cm / 2.54).toFixed(1);
@@ -31,16 +32,63 @@ function weightOz(g: number) {
   return (g / 28.3495).toFixed(g < 100 ? 2 : 1);
 }
 
+// Whole-plus-fractional months, the way people actually ask the question.
+function weeksToMonths(w: number) {
+  const months = w / 4.345;
+  const whole = Math.floor(months);
+  const rem = months - whole;
+  if (whole < 1) return 'less than 1 month';
+  const part = rem < 0.25 ? '' : rem < 0.75 ? ' and a half' : '';
+  const next = rem >= 0.75 ? whole + 1 : whole;
+  const n = part ? whole : next;
+  return `about ${n}${part} ${n === 1 && !part ? 'month' : 'months'}`;
+}
+
+// Concise, quotable Q&A — strong signal for rich results and AI answer engines.
+const faqs = [
+  {
+    q: `How big is the baby at ${weekNum} weeks?`,
+    a: `At ${weekNum} weeks pregnant, your baby is roughly the size of ${data.fruit}` +
+      (data.lengthCm ? `, about ${data.lengthCm} cm (${lengthIn(data.lengthCm)} in) long` : '') +
+      (data.weightG ? ` and around ${data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`}` : '') +
+      '. These are typical averages — every baby grows at its own pace.',
+  },
+  {
+    q: `How many months is ${weekNum} weeks pregnant?`,
+    a: `${weekNum} weeks pregnant is ${weeksToMonths(weekNum)}, in the ${trimesterName(data.trimester).toLowerCase()} trimester, with about ${weeksToGo} ${weeksToGo === 1 ? 'week' : 'weeks'} to go until your due date.`,
+  },
+  {
+    q: `What are common symptoms at ${weekNum} weeks?`,
+    a: `Common experiences around week ${weekNum} include ${data.symptoms.map((s) => s.toLowerCase()).join(', ')}. Symptoms vary widely — contact your provider if anything worries you.`,
+  },
+];
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: `Pregnancy Week ${weekNum}: ${data.title}`,
     description: `What to expect at ${weekNum} weeks pregnant — your baby is about the size of ${data.fruit}.`,
-    about: 'Pregnancy',
+    about: { '@type': 'MedicalCondition', name: 'Pregnancy' },
+    articleSection: `${trimesterName(data.trimester)} trimester`,
+    inLanguage: site.lang,
+    image: new URL(site.ogImage, site.url).href,
+    datePublished: site.contentPublished,
+    dateModified: site.contentReviewed,
     isPartOf: { '@type': 'CreativeWorkSeries', name: 'Week-by-week pregnancy guide' },
-    publisher: { '@type': 'Organization', name: site.name },
-    url: `${site.url}/pregnancy/week-${weekNum}/`,
+    author: { '@id': `${site.url}/#organization` },
+    publisher: { '@id': `${site.url}/#organization` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    url: canonicalUrl,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
   },
   {
     '@context': 'https://schema.org',
@@ -48,7 +96,7 @@ const jsonLd = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
       { '@type': 'ListItem', position: 2, name: 'Week by week', item: `${site.url}/pregnancy/` },
-      { '@type': 'ListItem', position: 3, name: `Week ${weekNum}`, item: `${site.url}/pregnancy/week-${weekNum}/` },
+      { '@type': 'ListItem', position: 3, name: `Week ${weekNum}`, item: canonicalUrl },
     ],
   },
 ];
@@ -59,6 +107,8 @@ const jsonLd = [
   description={`At ${weekNum} weeks pregnant your baby is about the size of ${data.fruit}. ${data.baby.slice(0, 110)}…`}
   path={`/pregnancy/week-${weekNum}/`}
   type="article"
+  publishedTime={site.contentPublished}
+  modifiedTime={site.contentReviewed}
   jsonLd={jsonLd}
 >
   <section class="section wk-hero" style={`--accent:${accent}`}>
@@ -137,6 +187,16 @@ const jsonLd = [
 
       <div class="callout">
         <p class="note"><b>A gentle reminder:</b> {MEDICAL_DISCLAIMER}</p>
+      </div>
+
+      <div class="faq" style="margin-top:40px">
+        <h2>Week {weekNum} FAQs</h2>
+        {faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>

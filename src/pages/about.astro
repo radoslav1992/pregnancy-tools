@@ -1,12 +1,32 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { site } from '@/data/site';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About ${site.name}`,
+    url: `${site.url}/about/`,
+    inLanguage: site.lang,
+    mainEntity: { '@id': `${site.url}/#organization` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'About', item: `${site.url}/about/` },
+    ],
+  },
+];
 ---
 
 <BaseLayout
   title="About Mama Bloom"
   description="Mama Bloom is a calm, private, free pregnancy companion — a due-date calculator, week-by-week tracker and a small suite of friendly tools."
   path="/about/"
+  jsonLd={jsonLd}
 >
   <section class="section">
     <div class="wrap narrow prose">

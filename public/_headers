@@ -21,3 +21,18 @@
 
 /manifest.webmanifest
   Cache-Control: public, max-age=86400
+
+# SEO / GEO discovery files — served fresh and readable as UTF-8 text
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+/sitemap-index.xml
+  Cache-Control: public, max-age=86400
+
+/sitemap-0.xml
+  Cache-Control: public, max-age=86400

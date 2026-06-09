@@ -22,8 +22,12 @@ content hub designed for organic search traffic.
 - **Guides** — a Markdown-powered blog (content collection) ready to grow.
 - **PWA** — installable, offline-first via Workbox, app shortcuts, maskable icons,
   and weekly milestone notifications.
-- **SEO-ready** — sitemap, canonical URLs, Open Graph + Twitter cards, JSON-LD
-  structured data (WebApplication, Article, FAQ, Breadcrumbs).
+- **SEO + GEO-ready** — prioritised sitemap (per-section `priority`/`changefreq`/
+  `lastmod`), canonical + `hreflang` URLs, rich Open Graph + Twitter cards, and a
+  sitewide JSON-LD `@graph` (Organization + WebSite) plus per-page structured
+  data (WebApplication, Article, FAQ, Breadcrumbs, CollectionPage, AboutPage).
+  Tuned for AI answer engines too: an explicit AI-crawler policy in
+  `robots.txt`, a curated `/llms.txt`, and concise, quotable FAQ answers.
 - **Privacy-first** — every calculation runs in the browser; personal data never
   leaves the device.
 

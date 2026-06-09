@@ -312,3 +312,27 @@ main { flex: 1 0 auto; }
 .prose a { color: var(--mulberry-deep); font-weight: 500; }
 .prose strong { font-weight: 600; }
 .prose hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+
+/* ---------- FAQ / disclosure list (reused across pages) ---------- */
+.faq h2 { margin-bottom: 14px; }
+.faq details {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  padding: 4px 16px;
+  margin-bottom: 10px;
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; color: var(--mulberry-deep); font-size: 1.3rem; line-height: 1; }
+.faq details[open] summary::after { content: '–'; }
+.faq details p { margin: 0 0 14px; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.6; }
