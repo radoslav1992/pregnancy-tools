@@ -1,0 +1,119 @@
+---
+// Works out current gestational age from a known due date or last period.
+---
+
+<div class="hfa card">
+  <div class="tabs" role="tablist" aria-label="What do you know?">
+    <button class="tab" role="tab" aria-selected="true" data-m="edd">I know my due date</button>
+    <button class="tab" role="tab" aria-selected="false" data-m="lmp">First day of last period</button>
+  </div>
+
+  <div class="seg active" data-seg="edd">
+    <div class="fld">
+      <label for="hfa-edd">Estimated due date</label>
+      <input type="date" id="hfa-edd" />
+    </div>
+  </div>
+  <div class="seg" data-seg="lmp">
+    <div class="fld">
+      <label for="hfa-lmp">First day of your last period</label>
+      <input type="date" id="hfa-lmp" />
+    </div>
+  </div>
+
+  <button class="btn block" id="hfa-calc" style="margin-top:6px">How far along am I?</button>
+  <p class="calc-err" id="hfa-err" role="alert"></p>
+
+  <div class="calc-result" id="hfa-result" hidden>
+    <div class="big-stat">
+      <p class="k">You are</p>
+      <p class="v" id="hfa-ga">—</p>
+      <p class="sub" id="hfa-tri">—</p>
+    </div>
+    <div class="stat-grid">
+      <div class="cell"><p class="k">Days to go</p><p class="v" id="hfa-left">—</p></div>
+      <div class="cell"><p class="k">% complete</p><p class="v" id="hfa-pct">—</p></div>
+      <div class="cell"><p class="k">Due date</p><p class="v" id="hfa-eddout">—</p></div>
+      <div class="cell"><p class="k">Conception (est.)</p><p class="v" id="hfa-con">—</p></div>
+    </div>
+    <a class="cta-link" id="hfa-cta" href="/pregnancy/">See what's developing this week →</a>
+  </div>
+</div>
+
+<style>
+  .hfa { padding: clamp(18px, 4vw, 24px); }
+  .tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+  .tab {
+    flex: 1; border: 0; background: transparent; cursor: pointer; border-radius: 9px;
+    padding: 9px 6px; font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--ink-soft);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  }
+  .tab[aria-selected='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(58, 46, 63, 0.12); }
+  .seg { display: none; }
+  .seg.active { display: block; }
+  .cta-link { display: inline-block; margin-top: 16px; font-weight: 600; font-size: 0.92rem; color: var(--mulberry-deep); text-decoration: none; }
+  .cta-link:hover { text-decoration: underline; }
+</style>
+
+<script>
+  import { savePregnancy, progressFromEdd } from '@/lib/store';
+
+  const DAY = 86400000;
+  const $ = (id: string) => document.getElementById(id);
+  let mode = 'edd';
+
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.hfa .tab'));
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => {
+      mode = t.dataset.m || 'edd';
+      tabs.forEach((x) => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
+      document.querySelectorAll<HTMLElement>('.hfa .seg').forEach((s) =>
+        s.classList.toggle('active', s.dataset.seg === mode)
+      );
+    });
+  });
+
+  const fmtShort = (d: Date) => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  const addDays = (d: Date, n: number) => new Date(d.getTime() + n * DAY);
+
+  const err = $('hfa-err');
+  const fail = (m: string) => { if (err) { err.textContent = m; err.classList.add('show'); } };
+
+  $('hfa-calc')?.addEventListener('click', () => {
+    err?.classList.remove('show');
+    let edd: Date;
+    if (mode === 'edd') {
+      const v = ($('hfa-edd') as HTMLInputElement).value;
+      if (!v) return fail('Please enter your due date.');
+      edd = new Date(v + 'T00:00:00');
+    } else {
+      const v = ($('hfa-lmp') as HTMLInputElement).value;
+      if (!v) return fail('Please enter the first day of your last period.');
+      edd = addDays(new Date(v + 'T00:00:00'), 280);
+    }
+
+    const p = progressFromEdd(edd);
+    if (p.daysLeft > 300) return fail('That due date looks too far away — please double-check it.');
+    if (p.daysLeft < -28) return fail('That date has long passed — please double-check it.');
+
+    const triNames = ['', 'First', 'Second', 'Third'];
+    const triColors = ['', 'var(--peach)', 'var(--sage)', 'var(--mulberry)'];
+    const set = (id: string, t: string) => { const el = $(id); if (el) el.textContent = t; };
+    const setHtml = (id: string, t: string) => { const el = $(id); if (el) el.innerHTML = t; };
+
+    setHtml('hfa-ga', `${p.week} <small style="font-size:0.5em;color:var(--ink-soft)">wk</small> ${p.day} <small style="font-size:0.5em;color:var(--ink-soft)">d</small>`);
+    setHtml('hfa-tri', `<span class="tri-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:${triColors[p.trimester]}"></span>${triNames[p.trimester]} trimester`);
+    set('hfa-left', p.daysLeft <= 0 ? 'Any day now' : `${p.daysLeft} days`);
+    set('hfa-pct', `${Math.round(p.frac * 100)}%`);
+    set('hfa-eddout', fmtShort(edd));
+    set('hfa-con', fmtShort(addDays(edd, -266)));
+
+    const ctaWk = Math.min(Math.max(p.week, 1), 40);
+    ($('hfa-cta') as HTMLAnchorElement).href = `/pregnancy/week-${ctaWk}/`;
+    savePregnancy(edd);
+
+    const r = $('hfa-result') as HTMLElement;
+    r.hidden = false;
+    r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>

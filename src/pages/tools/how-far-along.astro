@@ -1,0 +1,29 @@
+---
+import ToolShell from '@/components/ToolShell.astro';
+import HowFarAlong from '@/components/calculators/HowFarAlong.astro';
+import { getTool } from '@/data/tools';
+
+const tool = getTool('how-far-along')!;
+const faqs = [
+  {
+    q: 'How do you work out how many weeks pregnant I am?',
+    a: 'Pregnancy is dated as 280 days (40 weeks) from the first day of your last period. If you give us your due date we count backwards to that start point; if you give us your last period we count forwards. Your current week is the whole weeks that have passed since then.',
+  },
+  {
+    q: 'Why is my “week” ahead of when I conceived?',
+    a: 'Gestational age is counted from your last period, about two weeks before conception. So at conception you’re already considered “4 weeks pregnant” by convention — it can feel confusing, but it keeps everyone’s dating consistent.',
+  },
+  {
+    q: 'Which is more accurate — due date or last period?',
+    a: 'If your due date came from an early ultrasound, it’s usually the most accurate, so start from that. Dating from your last period assumes a regular 28-day cycle and textbook ovulation.',
+  },
+];
+---
+
+<ToolShell
+  tool={tool}
+  intro="Know your due date but not your week? Pop it in below to see exactly how far along you are, your trimester, and how many days are left."
+  faqs={faqs}
+>
+  <HowFarAlong />
+</ToolShell>

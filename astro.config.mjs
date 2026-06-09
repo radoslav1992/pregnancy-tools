@@ -4,7 +4,7 @@ import AstroPWA from '@vite-pwa/astro';
 import sitemap from '@astrojs/sitemap';
 
 // Update this to your production domain once deployed.
-const SITE = process.env.SITE_URL || 'https://pregnancy-tools.pages.dev';
+const SITE = process.env.SITE_URL || 'https://pregnancyandbaby.tools';
 
 // https://astro.build/config
 export default defineConfig({
@@ -74,6 +74,9 @@ export default defineConfig({
       workbox: {
         navigateFallback: '/offline/',
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        // Adds push / periodic-sync / notification handlers on top of the
+        // generated Workbox service worker (see public/push-sw.js).
+        importScripts: ['/push-sw.js'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
